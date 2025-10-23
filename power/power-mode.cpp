@@ -9,12 +9,23 @@
 #include <android-base/logging.h>
 #include <sys/ioctl.h>
 
+#define CMD_DATA_BUF_SIZE 256
+#define COMMON_DATA_CMD 0
 #define SET_CUR_VALUE 0
 #define TOUCH_DOUBLETAP_MODE 14
 #define TOUCH_MAGIC 0x54
-#define TOUCH_IOC_SETMODE _IO(TOUCH_MAGIC, SET_CUR_VALUE)
 #define TOUCH_DEV_PATH "/dev/xiaomi-touch"
 #define TOUCH_ID 0
+
+typedef struct {
+    int8_t   touch_id;
+    uint8_t  cmd;
+    uint16_t mode;
+    uint16_t data_len;
+    int32_t  data_buf[CMD_DATA_BUF_SIZE];
+} touch_data;
+
+#define TOUCH_IOC_COMMON_DATA _IOW(TOUCH_MAGIC, COMMON_DATA_CMD, touch_data)
 
 namespace aidl {
 namespace android {
@@ -38,8 +49,13 @@ bool setDeviceSpecificMode(Mode type, bool enabled) {
     switch (type) {
         case Mode::DOUBLE_TAP_TO_WAKE: {
             int fd = open(TOUCH_DEV_PATH, O_RDWR);
-            int arg[3] = {TOUCH_ID, TOUCH_DOUBLETAP_MODE, enabled ? 1 : 0};
-            ioctl(fd, TOUCH_IOC_SETMODE, &arg);
+            touch_data data = {};
+            data.touch_id = TOUCH_ID;
+            data.cmd = SET_CUR_VALUE;
+            data.mode = TOUCH_DOUBLETAP_MODE;
+            data.data_len = 1;
+            data.data_buf[0] = enabled ? 1 : 0;
+            ioctl(fd, TOUCH_IOC_COMMON_DATA, &data);
             close(fd);
             return true;
         }
