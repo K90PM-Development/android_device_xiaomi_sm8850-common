@@ -129,6 +129,10 @@ blob_fixups: blob_fixups_user_type = {
         .replace_needed('libaudio_aidl_conversion_common_ndk.so', 'libaudio_aidl_conversion_common_ndk-sm8850.so')
         .add_needed('libaudioutils_shim.so')
         .add_needed('libbluetooth_audio_session_aidl_shim.so'),
+    (
+        'vendor/etc/seccomp_policy/syshealthmon.policy'
+    ): blob_fixup()
+        .add_line_if_missing('lseek: 1'),
 }  # fmt: skip
 
 module = ExtractUtilsModule(
