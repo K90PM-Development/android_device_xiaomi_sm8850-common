@@ -150,6 +150,20 @@
         </interface>
     </hal>
     <hal format="aidl" optional="true">
+        <name>vendor.xiaomi.hardware.camera.mivimessage</name>
+        <interface>
+            <name>IService</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
+        <name>vendor.xiaomi.hardware.postprocservice</name>
+        <interface>
+            <name>IPostProcService</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
         <name>xiaomi.system.hypsys.common</name>
         <interface>
             <name>IHypSysSsi</name>

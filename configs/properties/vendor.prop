@@ -59,6 +59,7 @@ vendor.audio.hw.aac.encoder=false
 vendor.audio.offload.buffer.size.kb=32
 vendor.audio.offload.multiple.enabled=false
 vendor.audio.offload.track.enable=true
+vendor.audio.spkcal.copy.inhal=true
 vendor.audio.ull_record_period_multiplier=2
 vendor.audio.use.sw.alac.decoder=true
 vendor.audio.use.sw.ape.decoder=true
@@ -209,7 +210,11 @@ vendor.gatekeeper.is_security_level_spu=0
 vendor.keymint.retry_timer=5
 
 # Media
+debug.c2.use_dmabufheaps=1
 debug.stagefright.c2inputsurface=-1
+media.c2.hal.selection=aidl
+media.stagefright.audio.deep=false
+vendor.media.omx=0
 
 # MTE
 ro.arm64.memtag.bootctl_supported=1
