@@ -1,3 +1,9 @@
+type vendor_sysfs_eud_extcon, fs_type, sysfs_type;
+
+hal_client_domain(bootanim, vendor_hal_qspmhal)
+hal_client_domain(system_server, vendor_hal_unsignedhexlp)
+
 binder_call(system_server, hal_touchfeature_xiaomi_default)
 
 allow system_server hal_touchfeature_xiaomi_default:process signal;
+allow system_server vendor_sysfs_eud_extcon:file r_file_perms;

@@ -1,6 +1,10 @@
+get_prop(vendor_init, vendor_sno_prop)
+get_prop(vendor_qms, vendor_ssr_prop)
+
 set_prop(vendor_init, vendor_camera_prop)
 set_prop(vendor_init, vendor_deviceid_prop)
 set_prop(vendor_init, vendor_displayfeature_prop)
+set_prop(vendor_init, vendor_fp_prop)
 set_prop(vendor_init, vendor_mischeck_prop)
 set_prop(vendor_init, vendor_qcc_prop)
 set_prop(vendor_init, vendor_radio_prop)
@@ -8,6 +12,8 @@ set_prop(vendor_init, vendor_ssr_prop)
 set_prop(vendor_init, vendor_thermal_normal_prop)
 set_prop(vendor_init, vendor_touchfeature_prop)
 
+allow init same_process_hal_file:file execute;
+allow init vendor_sysfs_perf:file rw_file_perms;
 allow vendor_init minidump_data_file:dir create_dir_perms;
 allow vendor_init minidump_data_file:file create_file_perms;
 allow vendor_init vendor_sysfs_perf:file rw_file_perms;

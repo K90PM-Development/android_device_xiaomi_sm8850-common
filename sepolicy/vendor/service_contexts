@@ -1,8 +1,12 @@
 # Camera
 vendor.xiaomi.hardware.aidlbgservice.IBGService/default           u:object_r:hal_aidlbgservice_service:s0
+vendor.xiaomi.hardware.aidl.intentaware.IIntentAwareService/default  u:object_r:hal_intentaware_service:s0
 vendor.xiaomi.hardware.aon.IAlwaysOn/miaonservicehal           u:object_r:hal_camera_aon_service:s0
 vendor.xiaomi.hardware.camera.injection.ICameraInjectionService/default         u:object_r:hal_dynamic_camera_service:s0
+vendor.xiaomi.hardware.camera.mivimessage.IService/default    u:object_r:hal_mivimessage_service:s0
 vendor.xiaomi.hardware.camera.synthetic.IVirtualCameraRegistrar/default         u:object_r:hal_dynamic_camera_service:s0
+vendor.xiaomi.hardware.misys.common.IMiSysImpl/default    u:object_r:hal_misys_service:s0
+vendor.xiaomi.hardware.postprocservice.IPostProcService/default           u:object_r:hal_postprocservice_service:s0
 vendor.xiaomi.hardware.quickcamera.IQuickCameraService/default u:object_r:hal_quickcamera_service:s0
 vendor.xiaomi.sensor.camera.IMiCam/default  u:object_r:vendor_hal_misensor_camera_service:s0
 
@@ -21,9 +25,19 @@ vendor.dolby.dvs.IDvs/default u:object_r:dvs_aidl_service:s0
 # Fingerprint
 vendor.xiaomi.hardware.fx.tunnel.IMiFxTunnel/default                    u:object_r:vendor_hal_fingerprint_service_xiaomi:s0
 
+# FIDOCA
+vendor.xiaomi.hardware.mfidoca.IFidoService/default    u:object_r:hal_mfidoca_service:s0
+vendor.xiaomi.hardware.aidl.tidaservice.ITidaService/default    u:object_r:hal_tidaservice_service:s0
+
+# FrameMaster
+vendor.xiaomi.hardware.framemaster.IFrameMaster/default          u:object_r:vendor_hal_framemaster_service:s0
+
 # HypSys
 xiaomi.system.hypsys.common.IHypSysSsi/default            u:object_r:hal_hypsys_vendor_service:s0
 xiaomi.system.hypsys.common.IHypSysSsiIntl/default            u:object_r:hal_hypsys_vendor_service:s0
+
+# MiCharge
+vendor.xiaomi.hardware.micharge.IMiCharge/default    u:object_r:hal_micharge_service:s0
 
 # Mlipay
 vendor.xiaomi.hardware.mlipay.IMlipayService/default        u:object_r:hal_mlipay_service:s0
@@ -33,3 +47,9 @@ vendor.qti.sla.service.ISlaAIDLService/default u:object_r:hal_slaaidlservice_ser
 
 # Touchfeature
 vendor.xiaomi.hw.touchfeature.ITouchFeature/default          u:object_r:hal_touchfeature_xiaomi_service:s0
+
+# XMRadio
+vendor.xiaomi.hardware.radio.IXmRadio/slot1                      u:object_r:hal_xmradio_service:s0
+vendor.xiaomi.hardware.radio.IXmRadio/slot2    u:object_r:hal_xmradio_service:s0
+vendor.xiaomi.hardware.radio.cdc.IXmRadioCdc/slot1                        u:object_r:hal_xmradio_service:s0
+vendor.xiaomi.hardware.radio.cdc.IXmRadioCdc/slot2    u:object_r:hal_xmradio_service:s0

@@ -51,3 +51,5 @@ allow hal_touchfeature_xiaomi_default vendor_hal_perf2_service:service_manager f
 allow hal_touchfeature_xiaomi_default vendor_touchfeature_prop:file { getattr open read };
 allow hal_touchfeature_xiaomi_server hal_touchfeature_xiaomi_client:binder transfer;
 allow hal_touchfeature_xiaomi_server hal_touchfeature_xiaomi_service:service_manager { add find };
+
+allow system_app hal_touchfeature_xiaomi_default:binder call;

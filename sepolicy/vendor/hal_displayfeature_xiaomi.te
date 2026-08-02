@@ -1,6 +1,7 @@
 type vendor_hal_displayfeature_xiaomi_default, domain;
 type vendor_hal_displayfeature_xiaomi_default_exec, exec_type, file_type, vendor_file_type;
 type vendor_hal_displayfeature_xiaomi_service, hal_service_type, protected_service, service_manager_type;
+type vendor_hal_framemaster_service, hal_service_type, service_manager_type;
 
 binder_use(vendor_hal_displayfeature_xiaomi_default)
 hal_client_domain(vendor_hal_displayfeature_xiaomi_default, hal_graphics_allocator)
@@ -53,6 +54,7 @@ allow vendor_hal_displayfeature_xiaomi_default vendor_display_vendor_data_file:f
 allow vendor_hal_displayfeature_xiaomi_default vendor_displayfeature_device:chr_file { ioctl open read write };
 allow vendor_hal_displayfeature_xiaomi_default vendor_displaylog_device:chr_file { ioctl open read write };
 allow vendor_hal_displayfeature_xiaomi_default vendor_hal_display_config_hwservice:fd *;
+allow vendor_hal_displayfeature_xiaomi_default vendor_hal_framemaster_service:service_manager { add find };
 allow vendor_hal_displayfeature_xiaomi_default vendor_hal_vnddisplayconfig_service:service_manager find;
 allow vendor_hal_displayfeature_xiaomi_default vendor_miclstc_service:service_manager find;
 allow vendor_hal_displayfeature_xiaomi_default vendor_mistcdisplay_service:service_manager find;
