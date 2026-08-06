@@ -30,7 +30,7 @@ vendor.xiaomi.hardware.mfidoca.IFidoService/default    u:object_r:hal_mfidoca_se
 vendor.xiaomi.hardware.aidl.tidaservice.ITidaService/default    u:object_r:hal_tidaservice_service:s0
 
 # FrameMaster
-vendor.xiaomi.hardware.framemaster.IFrameMaster/default          u:object_r:vendor_hal_framemaster_service:s0
+vendor.xiaomi.hardware.framemaster.IFrameMaster/default          u:object_r:vendor_hal_framemaster_xiaomi_service:s0
 
 # HypSys
 xiaomi.system.hypsys.common.IHypSysSsi/default            u:object_r:hal_hypsys_vendor_service:s0
