@@ -46,10 +46,6 @@
 /vendor/bin/hw/vendor\.dolby\.dms\.service u:object_r:hal_aidl_dms_default_exec:s0
 /vendor/bin/hw/vendor\.dolby\.media\.c2-default-service-dax u:object_r:mediacodec_exec:s0
 
-# FIDOCA
-/odm/bin/fidoca    u:object_r:fidoca_exec:s0
-/odm/bin/tidad     u:object_r:tidad_exec:s0
-
 # Fingerprint
 /dev/xiaomi-fp    u:object_r:vendor_fingerprint_device:s0
 /(vendor|system/vendor)/bin/hw/android\.hardware\.biometrics\.fingerprint-service\.xiaomi              u:object_r:hal_fingerprint_default_exec:s0
@@ -64,6 +60,10 @@
 /dev/metis u:object_r:migt_dev:s0
 /dev/migt u:object_r:migt_dev:s0
 /sys/module/metis/parameters(/.*)? u:object_r:sysfs_migt:s0
+
+# MFIDOCA
+/(odm|vendor/odm|system/vendor)/bin/tidad     u:object_r:hal_tidaservice_default_exec:s0
+/(odm|vendor/odm|system/vendor)/bin/fidoca    u:object_r:hal_mfidoca_default_exec:s0
 
 # Micharge
 /(vendor|system/vendor)/bin/hw/vendor.xiaomi.hardware.micharge-service-dummy u:object_r:hal_micharge_default_exec:s0
