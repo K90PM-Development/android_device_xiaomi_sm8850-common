@@ -1,3 +1,0 @@
-type hal_xmradio_service, hal_service_type, service_manager_type;
-
-allow rild hal_xmradio_service:service_manager { add find };

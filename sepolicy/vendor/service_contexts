@@ -49,7 +49,7 @@ vendor.qti.sla.service.ISlaAIDLService/default u:object_r:hal_slaaidlservice_ser
 vendor.xiaomi.hw.touchfeature.ITouchFeature/default          u:object_r:hal_touchfeature_xiaomi_service:s0
 
 # XMRadio
-vendor.xiaomi.hardware.radio.IXmRadio/slot1                      u:object_r:hal_xmradio_service:s0
-vendor.xiaomi.hardware.radio.IXmRadio/slot2    u:object_r:hal_xmradio_service:s0
-vendor.xiaomi.hardware.radio.cdc.IXmRadioCdc/slot1                        u:object_r:hal_xmradio_service:s0
-vendor.xiaomi.hardware.radio.cdc.IXmRadioCdc/slot2    u:object_r:hal_xmradio_service:s0
+vendor.xiaomi.hardware.radio.IXmRadio/slot1          u:object_r:vendor_hal_telephony_service2:s0
+vendor.xiaomi.hardware.radio.IXmRadio/slot2          u:object_r:vendor_hal_telephony_service2:s0
+vendor.xiaomi.hardware.radio.cdc.IXmRadioCdc/slot1           u:object_r:vendor_hal_telephony_service2:s0
+vendor.xiaomi.hardware.radio.cdc.IXmRadioCdc/slot2           u:object_r:vendor_hal_telephony_service2:s0
