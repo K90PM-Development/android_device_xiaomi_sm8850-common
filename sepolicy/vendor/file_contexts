@@ -78,13 +78,10 @@
 /sys/kernel/reserve_pool(/.*)? u:object_r:vendor_sysfs_perf:s0
 
 # Power 
-/(vendor|system/vendor)/bin/hw/android\.hardware\.power-service-qti          u:object_r:hal_power_default_exec:s0
 /(vendor|system/vendor)/bin/hw/android\.hardware\.powerstats-service\.qti    u:object_r:hal_power_stats_default_exec:s0
 
-# Qualcomm QMS
-/vendor/bin/qms           u:object_r:vendor_qms_exec:s0
+# QRTR Lookup
 /vendor/bin/qrtr-lookup   u:object_r:vendor_qrtr_lookup_exec:s0
-/vendor/bin/vppservice    u:object_r:vendor_vppservice_exec:s0
 
 # Sensors
 /(vendor|system/vendor)/bin/hw/android\.hardware\.sensors-service\.xiaomi-multihal     u:object_r:hal_sensors_default_exec:s0
