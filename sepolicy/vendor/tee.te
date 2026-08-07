@@ -1,1 +1,3 @@
 allow tee mnt_vendor_file:file r_file_perms;
+
+type_transition tee vendor_persist_data_file:dir vendor_persist_data_file;
