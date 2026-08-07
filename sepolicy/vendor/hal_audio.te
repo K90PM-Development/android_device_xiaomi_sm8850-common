@@ -1,3 +1,5 @@
+type hal_mediaeventgatherservice_xiaomi_service, hal_service_type, service_manager_type;
+
 unix_socket_connect(hal_audio_default, property, hal_sensors_default)
 
 hal_client_domain(hal_audio_default, hal_aidl_dms)
@@ -8,6 +10,7 @@ get_prop(hal_audio_default, vendor_audio_cloud_ctrl_mi_prop)
 r_dir_file(hal_audio_default, vendor_persist_audio_file)
 
 allow hal_audio_default audio_socket:sock_file rw_file_perms;
+allow hal_audio_default hal_mediaeventgatherservice_xiaomi_service:service_manager find;
 allow hal_audio_default vendor_sysfs_xm_power:dir r_dir_perms;
 allow hal_audio_default vendor_sysfs_xm_power:file rw_file_perms;
 allow hal_audio_default vendor_persist_audio_file:dir rw_dir_perms;

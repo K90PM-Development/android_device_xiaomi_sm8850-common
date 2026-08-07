@@ -36,6 +36,9 @@ vendor.xiaomi.hardware.framemaster.IFrameMaster/default          u:object_r:vend
 xiaomi.system.hypsys.common.IHypSysSsi/default            u:object_r:hal_hypsys_vendor_service:s0
 xiaomi.system.hypsys.common.IHypSysSsiIntl/default            u:object_r:hal_hypsys_vendor_service:s0
 
+# MediaGather
+vendor.xiaomi.hardware.mediaeventgatherservice.IMediaGather/default             u:object_r:hal_mediaeventgatherservice_xiaomi_service:s0
+
 # MiCharge
 vendor.xiaomi.hardware.micharge.IMiCharge/default    u:object_r:hal_micharge_service:s0
 
