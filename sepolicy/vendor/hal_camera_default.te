@@ -7,13 +7,7 @@ type hal_mivimessage_service, hal_service_type, service_manager_type;
 type hal_misys_service, hal_service_type, service_manager_type;
 type vendor_sysfs_freq_qos, fs_type, sysfs_type;
 
-get_prop(hal_camera_default, ab_update_gki_prop)
-get_prop(hal_camera_default, adaptive_haptics_prop)
-get_prop(hal_camera_default, adbd_config_prop)
-get_prop(hal_camera_default, bluetooth_a2dp_offload_prop)
-get_prop(hal_camera_default, bluetooth_audio_hal_prop)
 get_prop(hal_camera_default, bpf_progs_loaded_prop)
-get_prop(hal_camera_default, aac_drc_prop)
 set_prop(hal_camera, vendor_camera_sensor_prop)
 set_prop(hal_camera_default, vendor_camera_p3enable_prop)
 set_prop(hal_camera_default, vendor_camera_xdrversion_prop)
