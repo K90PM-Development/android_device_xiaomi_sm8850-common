@@ -32,6 +32,9 @@ vendor.audio.cpu.sched.onlyfast=true
 vendor.audio.rt.mode=18
 vendor.audio.rt.mode.onlyfast=true
 
+# Battery secret
+persist.vendor.region.charger=default
+
 # Camera
 debug.config.video.p3.decode.support=true
 debug.config.video.p3.encode.support=true

@@ -71,18 +71,32 @@ vendor.qc2audio.per_frame.flac.dec.enabled=true
 vendor.qc2audio.suspend.enabled=true
 
 # Bluetooth
+bluetooth.core.le_audio.codec_extension_aidl.enabled=false
+bluetooth.device.class_of_device=90,2,12
+bluetooth.profile.asha.central.enabled=true
 bluetooth.profile.asha.central.enabled=true
 bluetooth.profile.bap.broadcast.assist.enabled=true
+bluetooth.profile.bap.broadcast.assist.enabled=true
+bluetooth.profile.bap.broadcast.source.enabled=true
 bluetooth.profile.bap.broadcast.source.enabled=true
 bluetooth.profile.bap.unicast.client.enabled=true
+bluetooth.profile.bap.unicast.client.enabled=true
+bluetooth.profile.ccp.server.enabled=true
 bluetooth.profile.ccp.server.enabled=true
 bluetooth.profile.csip.set_coordinator.enabled=true
+bluetooth.profile.csip.set_coordinator.enabled=true
+bluetooth.profile.hap.client.enabled=true
 bluetooth.profile.hap.client.enabled=true
 bluetooth.profile.mcp.server.enabled=true
+bluetooth.profile.mcp.server.enabled=true
+bluetooth.profile.vcp.controller.enabled=true
 bluetooth.profile.vcp.controller.enabled=true
 persist.bluetooth.a2dp_offload.cap=sbc-aac-aptx-aptxhd-ldac-lhdc-mihc
 persist.bluetooth.a2dp_offload.disabled=false
-persist.vendor.bt.a2dp_offload_cap=sbc-aptx-aptxtws-aptxhd-aac-ldac-lhdc-mihc
+persist.bluetooth.leaudio_offload.disabled=false
+persist.sys.fflag.override.settings_bluetooth_hearing_aid=true
+persist.vendor.bt.aac_frm_ctl.enabled=true
+persist.vendor.bt.aac_vbr_frm_ctl.enabled=true
 persist.vendor.qcom.bluetooth.a2dp_offload_codec_extensibility=false
 persist.vendor.qcom.bluetooth.aac_vbr_ctl.enabled=true
 persist.vendor.qcom.bluetooth.aptxadaptiver2_1_support=true
@@ -91,6 +105,8 @@ persist.vendor.qcom.bluetooth.fmd_config_info=80:0C:60:90:0F:00:00:14:01
 persist.vendor.qcom.bluetooth.fmd_header=8:02:01:06:18:16:AA:FE:40
 persist.vendor.qcom.bluetooth.lossless_aptx_adaptive_le.enabled=true
 persist.vendor.qcom.bluetooth.vsc_enabled=false
+ro.bluetooth.a2dp_offload.supported=true
+ro.vendor.qcom.bluetooth.nl_xdump.supported=true
 
 # C2PA
 vendor.c2pa.service_start=1
@@ -241,11 +257,15 @@ persist.vendor.radio.apm_sim_not_pwdn=1
 persist.vendor.radio.custom_ecc=1
 persist.vendor.radio.dsds_to_ss_timer=120000
 persist.vendor.radio.dsds_to_ss=0
+persist.vendor.radio.dynamic_sar=1
+persist.vendor.radio.enableadvancedscan=true
 persist.vendor.radio.procedure_bytes=SKIP
 persist.vendor.radio.sib16_support=1
 persist.vendor.rcs.singlereg.feature=1
 ro.com.android.dataroaming=true
+ro.telephony.default_network=33,33
 ro.vendor.radio.build_profile=miui
+ro.vendor.radio.build_region=global
 
 # Secureprocessor
 vendor.secureprocessor.service_start=1
@@ -255,6 +275,7 @@ ro.recovery.usb.adb.pid=D001
 ro.recovery.usb.fastboot.pid=4EE0
 ro.recovery.usb.vid=18D1
 ro.usb.uvc.enabled=false
+sys.usb.mtp.batchcancel=1
 vendor.usb.controller=a600000.dwc3
 vendor.usb.diag.func.name=ffs
 vendor.usb.dpl.inst.name=dpl
