@@ -238,6 +238,7 @@ PRODUCT_PACKAGES += \
     NcmTetheringOverlay \
     SettingsOverlayXiaomi \
     SystemUIOverlayXiaomi \
+    TelephonyResXiaomi \
     WifiOverlayXiaomi
 
 # Pagesize
