@@ -20,10 +20,35 @@
 # Camera
 /(odm|vendor)/bin/hw/vendor\.qti\.camera\.provider-service_64 u:object_r:hal_camera_default_exec:s0
 /(odm|vendor/odm|vendor|system/vendor)/bin/hw/misensor_camera u:object_r:vendor_hal_misensor_camera_default_exec:s0
+/(vendor|odm)/lib(64)?/libanc_single_bokeh\.so           u:object_r:same_process_hal_file:s0
+/(vendor|odm)/lib(64)?/libmiphone_capture_bokeh\.so      u:object_r:same_process_hal_file:s0
 /data/vendor/aon(/.*)? u:object_r:vendor_aon_vendor_data_file:s0
 /dev/camlog u:object_r:camlog_device:s0
-/mnt/vendor/persist/camera(/.*)? u:object_r:camera_persist_file:s0
 /dev/miev u:object_r:vendor_miev_device:s0
+/mnt/vendor/persist/camera(/.*)? u:object_r:camera_persist_file:s0
+/odm/lib(64)?/libmialgo_utils\.so                        u:object_r:same_process_hal_file:s0
+/odm/lib(64)?/libmiocr\.so                               u:object_r:same_process_hal_file:s0
+/odm/lib(64)?/libxmi_slow_motion_mein\.so                u:object_r:same_process_hal_file:s0
+/vendor/data/model/seg_quantized\.serialized\.8850\.aimet\.pertensor_512_cls3\.minn    u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libc\+\+_shared\.so                     u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libcalculator\.so                       u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libhta_hexagon_runtime_snpe\.so         u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libopencv_core_se\.so                   u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libopencv_imgproc_se\.so                u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libPlatformValidatorShared\.so          u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libQnnHtp\.so                           u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libQnnHtpNetRunExtensions\.so           u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libQnnHtpV81Stub\.so                    u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libQnnSystem\.so                        u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libSEGModel\.so                         u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libSNPE\.so                             u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libSnpeHta\.so                          u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libSnpeHtpPrepare\.so                   u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libSnpeHtpV81CalculatorStub\.so         u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libSnpeHtpV81Stub\.so                   u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/rfsa/adsp/libCalculator_skel\.so        u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/rfsa/adsp/libSnpeHtpV81Skel\.so         u:object_r:same_process_hal_file:s0
+/vendor/lib/rfsa/adsp/libQnnHtpV81Skel\.so               u:object_r:same_process_hal_file:s0
 
 # CitSensor
 /(odm|vendor/odm|vendor|system/vendor)/bin/hw/vendor.xiaomi.sensor.citsensorservice.aidl u:object_r:vendor_hal_citsensorservice_xiaomi_default_exec:s0
@@ -62,7 +87,6 @@
 /sys/module/metis/parameters(/.*)? u:object_r:sysfs_migt:s0
 
 # MFIDOCA
-/(odm|vendor/odm|system/vendor)/bin/tidad     u:object_r:hal_tidaservice_default_exec:s0
 /(odm|vendor/odm|system/vendor)/bin/fidoca    u:object_r:hal_mfidoca_default_exec:s0
 
 # Micharge
@@ -100,6 +124,9 @@
 /sys/devices/virtual/thermal/thermal_message/torch_real_level u:object_r:sys_thermal_torch_real_level:s0
 /sys/devices/virtual/thermal/thermal_message/wifi_limit u:object_r:sys_thermal_wifi_limit:s0
 /sys/powersave(/.*)? u:object_r:sysfs_power_save:s0
+
+# Tidad
+/(odm|vendor/odm|system/vendor)/bin/tidad     u:object_r:hal_tidaservice_default_exec:s0
 
 # Touch
 /(odm|vendor/odm|vendor|system/vendor)/bin/ear_sensor                   u:object_r:touchreport_exec:s0
