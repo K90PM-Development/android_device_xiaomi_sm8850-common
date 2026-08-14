@@ -272,6 +272,7 @@ $(call soong_config_set,lineage_powershare,powershare_path,/sys/class/xm_power/c
 
 # QSPA
 PRODUCT_PACKAGES += \
+    qspa_vendor.rc \
     vendor.qti.qspa-service
 
 # Rootdir
