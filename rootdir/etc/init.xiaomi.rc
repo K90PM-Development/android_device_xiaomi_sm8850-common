@@ -36,3 +36,7 @@ on post-fs-data
     chown system system /sys/class/xm_power/charger/smart_charge/smart_night
     chmod 0660 /sys/class/xm_power/charger/wls_rev_charge/reverse_chg_mode
     chmod 0660 /sys/class/xm_power/charger/smart_charge/smart_night
+
+on property:sys.boot_completed=1
+    # Set thermal mode to mgame
+    write /sys/devices/virtual/thermal/thermal_message/sconfig 19
