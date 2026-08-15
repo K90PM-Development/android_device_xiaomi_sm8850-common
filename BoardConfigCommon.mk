@@ -108,11 +108,18 @@ BOARD_PVMFWIMAGE_PARTITION_SIZE := 1048576
 BOARD_SUPER_PARTITION_SIZE := 14495514624
 BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
 BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 14491320320
-BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_dlkm system_ext product vendor vendor_dlkm odm
+EXT4_PARTITIONS := product system system_ext
+EROFS_PARTITIONS := odm vendor vendor_dlkm system_dlkm
+BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := $(EXT4_PARTITIONS) $(EROFS_PARTITIONS)
 
-BOARD_PARTITION_LIST := $(call to-upper, $(BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST))
-$(foreach p, $(BOARD_PARTITION_LIST), $(eval BOARD_$(p)IMAGE_FILE_SYSTEM_TYPE := ext4))
-$(foreach p, $(BOARD_PARTITION_LIST), $(eval TARGET_COPY_OUT_$(p) := $(call to-lower, $(p))))
+$(foreach p, $(call to-upper, $(EXT4_PARTITIONS)), \
+    $(eval BOARD_$(p)IMAGE_FILE_SYSTEM_TYPE := ext4))
+
+$(foreach p, $(call to-upper, $(EROFS_PARTITIONS)), \
+    $(eval BOARD_$(p)IMAGE_FILE_SYSTEM_TYPE := erofs))
+
+$(foreach p, $(call to-upper, $(BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST)), \
+    $(eval TARGET_COPY_OUT_$(p) := $(call to-lower, $(p))))
 
 # Metadata
 BOARD_USES_METADATA_PARTITION := true
