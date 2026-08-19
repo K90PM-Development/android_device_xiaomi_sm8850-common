@@ -1892,6 +1892,9 @@ vendor/lib64/vendor.qti.hardware.qteeconnector@1.0.so
 # Trustzone
 vendor/app/TrustZoneAccessService/TrustZoneAccessService.apk
 
+# USB
+vendor/etc/usb_compositions.conf
+
 # Uevent
 odm/etc/ueventd.rc;MODULE=ueventd-odm.rc
 
