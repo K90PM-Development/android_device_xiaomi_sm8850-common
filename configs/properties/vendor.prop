@@ -6,7 +6,6 @@ persist.vendor.audio.auto.scenario=true
 persist.vendor.audio.misound.disable=true
 ro.audio.flinger_standbytime_ms=2000
 ro.audio.monitorRotation=true
-ro.audio.spatializer_enabled=true
 ro.audio.stereo_spatialization_enabled=true
 ro.audio.usecase_validator_enabled=true
 ro.vendor.audio.activity.monitor=true
