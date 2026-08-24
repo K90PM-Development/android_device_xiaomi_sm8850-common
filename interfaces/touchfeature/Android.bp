@@ -4,7 +4,7 @@
 //
 
 aidl_interface {
-    name: "vendor.xiaomi.hw.touchfeature-sm8850",
+    name: "vendor.xiaomi.hw.touchfeature",
     vendor_available: true,
     srcs: ["vendor/xiaomi/hw/touchfeature/*.aidl"],
     stability: "vintf",
