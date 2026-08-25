@@ -101,6 +101,9 @@
 # Perf
 /sys/kernel/reserve_pool(/.*)? u:object_r:vendor_sysfs_perf:s0
 
+# Power
+/(vendor|system/vendor)/bin/hw/android\.hardware\.power-service-qti u:object_r:hal_power_default_exec:s0
+
 # QRTR Lookup
 /vendor/bin/qrtr-lookup   u:object_r:vendor_qrtr_lookup_exec:s0
 
