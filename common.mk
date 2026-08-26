@@ -343,6 +343,9 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.thermal-service.qti
 
+# Touchfeature
+$(call soong_config_set,xiaomi,disable_touchfeature_aidl,true)
+
 # Update engine
 PRODUCT_PACKAGES += \
     update_engine \
