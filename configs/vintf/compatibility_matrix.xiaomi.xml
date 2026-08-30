@@ -194,4 +194,20 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <hal format="aidl" optional="true"> 
+        <name>vendor.xiaomi.hardware.radio.cdc</name>
+        <interface>
+            <name>IXmRadioCdc</name>
+            <instance>slot1</instance>
+            <instance>slot2</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true"> 
+        <name>vendor.xiaomi.hardware.radio</name>
+        <interface>
+            <name>IXmRadio</name>
+            <instance>slot1</instance>
+            <instance>slot2</instance>
+        </interface>
+    </hal>
 </compatibility-matrix>

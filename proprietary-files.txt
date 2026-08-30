@@ -1633,6 +1633,8 @@ vendor/etc/vintf/manifest/vendor.qti.hardware.radio.qtiradioconfig.xml
 vendor/etc/vintf/manifest/vendor.qti.hardware.radio.uim_remote_client.xml
 vendor/etc/vintf/manifest/vendor.qti.hardware.radio.uim_remote_server.xml
 vendor/etc/vintf/manifest/vendor.qti.hardware.radio.uim.xml
+vendor/etc/vintf/manifest/vendor.xiaomi.hardware.radio.cdc.xml
+vendor/etc/vintf/manifest/vendor.xiaomi.hardware.radio.xml
 vendor/etc/xiaomi_ecc_list_preference.xml
 vendor/etc/xiaomi_ecc_list.xml
 vendor/lib64/cellularSecurityModule.so
