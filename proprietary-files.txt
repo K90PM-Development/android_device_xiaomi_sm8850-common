@@ -1559,7 +1559,8 @@ system_ext/framework/vendor.qti.ims.rcsconfig-V2.0-java.jar
 system_ext/framework/vendor.qti.ims.rcsconfig-V2.1-java.jar
 system_ext/framework/vendor.qti.ims.rcssipaidlservice-V1-java.jar
 system_ext/framework/vendor.qti.ims.rcsuceaidlservice-V1-java.jar
-system_ext/priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk
+# myron_global 16 BP2A.250605.031.A3 OS3.0.3.0.WPMIDXM
+system_ext/priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk|9f3e00bb256137c99efe71734a24ac9b243b1044
 system_ext/priv-app/QtiTelephony/QtiTelephony.apk;REQUIRED=QtiTelephonyCompat
 system/etc/permissions/uimremoteclient.xml
 system/etc/permissions/uimremoteserver.xml
