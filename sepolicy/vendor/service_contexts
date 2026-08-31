@@ -5,7 +5,6 @@ vendor.xiaomi.hardware.aon.IAlwaysOn/miaonservicehal           u:object_r:hal_ca
 vendor.xiaomi.hardware.camera.injection.ICameraInjectionService/default         u:object_r:hal_dynamic_camera_service:s0
 vendor.xiaomi.hardware.camera.mivimessage.IService/default    u:object_r:hal_mivimessage_service:s0
 vendor.xiaomi.hardware.camera.synthetic.IVirtualCameraRegistrar/default         u:object_r:hal_dynamic_camera_service:s0
-vendor.xiaomi.hardware.misys.common.IMiSysImpl/default    u:object_r:hal_misys_service:s0
 vendor.xiaomi.hardware.postprocservice.IPostProcService/default           u:object_r:hal_postprocservice_service:s0
 vendor.xiaomi.hardware.quickcamera.IQuickCameraService/default u:object_r:hal_quickcamera_service:s0
 vendor.xiaomi.sensor.camera.IMiCam/default  u:object_r:vendor_hal_misensor_camera_service:s0

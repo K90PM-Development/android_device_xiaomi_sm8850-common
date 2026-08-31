@@ -4,7 +4,6 @@ type hal_dynamic_camera_service, hal_service_type, protected_service, service_ma
 type hal_intentaware_service, hal_service_type, protected_service, service_manager_type;
 type hal_postprocservice_service, hal_service_type, service_manager_type;
 type hal_mivimessage_service, hal_service_type, service_manager_type;
-type hal_misys_service, hal_service_type, service_manager_type;
 type vendor_sysfs_freq_qos, fs_type, sysfs_type;
 
 get_prop(hal_camera_default, bpf_progs_loaded_prop)
