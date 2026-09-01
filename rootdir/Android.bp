@@ -56,3 +56,9 @@ mkdir {
     dir: "vm-system",
     product_specific: true,
 }
+
+sh_binary {
+    name: "init.v4a.sh",
+    src: "bin/init.v4a.sh",
+    vendor: true,
+}

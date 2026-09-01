@@ -35,3 +35,24 @@ mkdir {
     dir: "modem_firmware",
     vendor: true,
 }
+
+cc_prebuilt_library_shared {
+    name: "libv4a_aidl",
+    owner: "oneplus",
+    vendor: true,
+    relative_install_path: "soundfx",
+    srcs: ["prebuilt/lib64/soundfx/libv4a_aidl.so"],
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    check_elf_files: false,
+}
+
+android_app_import {
+    name: "ViPER4Android",
+    apk: "prebuilt/app/ViPER4Android/ViPER4Android.apk",
+    product_specific: true,
+    presigned: true,
+    preprocessed: true,
+}

@@ -81,6 +81,7 @@ PRODUCT_PACKAGES += \
     libdynamicsprocessingaidl \
     libloudnessenhanceraidl \
     libreverbaidl \
+    libv4a_aidl \
     libvisualizeraidl \
     qti-audio-types-aidl-V1-ndk.vendor \
     qtiaudiohalvendorextn
@@ -91,6 +92,7 @@ PRODUCT_COPY_FILES += \
     $(AUDIO_HAL_DIR)/mem_logger_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mem_logger_config.xml \
     $(AUDIO_HAL_DIR)/microphone_characteristics.xml:$(TARGET_COPY_OUT_VENDOR)/etc/microphone_characteristics.xml \
     $(AUDIO_HAL_DIR)/vendor_audio_interfaces.xml:$(TARGET_COPY_OUT_VENDOR)/etc/vendor_audio_interfaces.xml \
+    $(LOCAL_PATH)/configs/audio/audio_effects_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio/sku_canoe/audio_effects_config.xml \
     $(LOCAL_PATH)/configs/audio/audio_module_config_primary.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio/audio_module_config_primary.xml \
     $(LOCAL_PATH)/configs/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio/sku_canoe/audio_policy_configuration.xml
 
@@ -278,11 +280,16 @@ PRODUCT_PACKAGES += \
     init.recovery.qcom.rc \
     init.qcom.rc \
     init.target.rc \
+    init.v4a.sh \
     init.xiaomi.rc \
     ueventd.qcom.rc
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
+
+# ViPER4Android
+PRODUCT_PACKAGES += \
+    ViPER4Android
 
 # Parts
 PRODUCT_PACKAGES += \
