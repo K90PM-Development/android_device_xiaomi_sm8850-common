@@ -1,0 +1,32 @@
+//
+// Copyright (C) 2026 The LineageOS Project
+//           (C) 2026 crDroid Android Project
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+android_app {
+    name: "XiaomiMiSound",
+
+    srcs: ["src/**/*.kt"],
+    resource_dirs: ["res"],
+    certificate: "platform",
+    platform_apis: true,
+    system_ext_specific: true,
+    privileged: true,
+
+    overrides: [],
+    static_libs: [
+        "androidx.preference_preference",
+        "org.lineageos.settings.resources",
+    ],
+
+    required: ["preinstalled-packages-platform-misound.xml"],
+}
+
+prebuilt_etc {
+    name: "preinstalled-packages-platform-misound.xml",
+    src: "preinstalled-packages-platform-misound.xml",
+    sub_dir: "sysconfig",
+    system_ext_specific: true,
+}
