@@ -291,6 +291,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     ViPER4Android
 
+# MiSound
+PRODUCT_PACKAGES += \
+    XiaomiMiSound
+
 # Parts
 PRODUCT_PACKAGES += \
     XiaomiParts
