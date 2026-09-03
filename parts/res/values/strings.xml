@@ -11,4 +11,14 @@
     <string name="touch_title">Touch Sampling Rate</string>
     <string name="touch_high_sampling_rate_title">High Touch Sampling Rate</string>
     <string name="touch_high_sampling_rate_footer">Increase touchscreen polling rate</string>
+
+    <!-- MiSound settings (sub-page) -->
+    <string name="misound_title">MiSound</string>
+    <string name="misound_enabled_title">Enable MiSound</string>
+    <string name="misound_enabled_summary">Route bass to the back speaker for 2.1 surround output</string>
+    <string name="misound_mode_title">Mode</string>
+    <string name="misound_mode_summary">Choose how the bottom speaker is driven</string>
+    <string name="misound_mode_off">Off</string>
+    <string name="misound_mode_intelligent">Intelligent</string>
+    <string name="misound_mode_standard">Standard</string>
 </resources>

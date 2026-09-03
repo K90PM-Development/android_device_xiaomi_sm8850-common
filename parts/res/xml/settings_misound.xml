@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/misound_title">
+
+    <SwitchPreferenceCompat
+        android:key="misound_enabled"
+        android:title="@string/misound_enabled_title"
+        android:summary="@string/misound_enabled_summary"
+        android:defaultValue="true" />
+
+    <ListPreference
+        android:key="misound_mode"
+        android:title="@string/misound_mode_title"
+        android:summary="@string/misound_mode_summary"
+        android:entries="@array/misound_mode_entries"
+        android:entryValues="@array/misound_mode_values"
+        android:defaultValue="1" />
+
+</PreferenceScreen>

@@ -22,6 +22,8 @@ class BootCompletedReceiver : BroadcastReceiver() {
         }
 
         Log.i(TAG, "Boot completed, starting MiSound controller")
-        MiSoundController.getInstance(context).onBootCompleted()
+        val controller = MiSoundController.getInstance(context)
+        controller.onBootCompleted()
+        controller.registerSettingsObserver()
     }
 }

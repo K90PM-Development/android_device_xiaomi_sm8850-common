@@ -51,6 +51,24 @@
                 android:value="-10" />
         </activity>
 
+        <activity
+            android:name=".audio.MiSoundSettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:label="@string/misound_title">
+            <intent-filter>
+                <action android:name="com.android.settings.action.IA_SETTINGS" />
+            </intent-filter>
+            <meta-data
+                android:name="com.android.settings.category"
+                android:value="com.android.settings.category.ia.sound" />
+            <!-- Sit at the bottom of the Sound category so the row appears
+                 after the system-provided audio entries. -->
+            <meta-data
+                android:name="com.android.settings.order"
+                android:value="100" />
+        </activity>
+
     </application>
 </manifest>
 
