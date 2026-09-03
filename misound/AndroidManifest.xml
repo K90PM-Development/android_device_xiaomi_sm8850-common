@@ -12,7 +12,8 @@
 
     <application
         android:allowBackup="false"
-        android:label="@string/misound_title">
+        android:label="@string/misound_title"
+        android:persistent="true">
 
         <receiver
             android:name=".BootCompletedReceiver"

@@ -20,11 +20,11 @@ class MiSoundConstants {
         val EFFECT_TYPE_MISOUND =
             java.util.UUID.fromString("5b8e36a5-144a-4c38-b1d7-0002a5d5c51b")
 
-        // The stock AudioEffectCenter logs "MISOUND_PARAM_SUPER_EFFECT_PROFILE (31 / 0x1f) 
-        // -> Value: 0 (0x0)" when surround mode is engaged.
+        // The stock AudioEffectCenter logs "MISOUND_PARAM_SUPER_EFFECT_PROFILE (31 / 0x1f)
+        // -> Value: 1 (0x1)" when surround mode is engaged (TODO: Check what 2 does)
         const val MISOUND_PARAM_SUPER_EFFECT_PROFILE = 31
 
-        const val PROFILE_SURROUND = 0
+        const val PROFILE_SURROUND = 1
         const val EFFECT_PRIORITY = 100
         const val PREF_ENABLE = "misound_enabled"
 

@@ -97,6 +97,7 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
     <postprocess>
         <stream type="music">
             <!-- <apply effect="music_helper"/> -->
+            <apply effect="misoundfx"/>
             <apply effect="dlb_music_listener"/>
         </stream>
         <!-- <stream type="ring">
