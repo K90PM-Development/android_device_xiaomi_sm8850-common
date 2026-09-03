@@ -21,4 +21,22 @@
         android:entryValues="@array/misound_mode_values"
         android:defaultValue="1" />
 
+    <SwitchPreferenceCompat
+        android:key="misound_3d_surround"
+        android:title="@string/misound_3d_surround_title"
+        android:summary="@string/misound_3d_surround_summary"
+        android:defaultValue="false" />
+
+    <SwitchPreferenceCompat
+        android:key="misound_sound_id"
+        android:title="@string/misound_sound_id_title"
+        android:summary="@string/misound_sound_id_summary"
+        android:defaultValue="false" />
+
+    <SwitchPreferenceCompat
+        android:key="misound_eq_compensation"
+        android:title="@string/misound_eq_compensation_title"
+        android:summary="@string/misound_eq_compensation_summary"
+        android:defaultValue="false" />
+
 </PreferenceScreen>

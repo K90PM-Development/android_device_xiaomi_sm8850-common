@@ -44,11 +44,28 @@ class MiSoundAudioEffect(priority: Int, audioSession: Int) : AudioEffect(
         get() = getIntParam(MISOUND_PARAM_SUPER_EFFECT_PROFILE)
         set(value) {
             dlog(TAG, "setSuperEffectProfile($value)")
-            checkStatus(setIntParam(MISOUND_PARAM_SUPER_EFFECT_PROFILE, value))
+            setIntParam(MISOUND_PARAM_SUPER_EFFECT_PROFILE, value)
         }
 
-    private fun setIntParam(param: Int, value: Int): Int {
-        return setParameter(param, value)
+    /**
+     * Sends a 4-byte int param to the effect. The vendor's AIDL dispatcher
+     * sees a [paramId, value] pair (paramId at the first 4 bytes of the wire
+     * payload, value at the next 4, little-endian). See
+     * `EffectMiSoundContext::setParams(vector<uint8_t>)` in
+     * `libmisoundfx_aosp_aidl_ext.so` for the per-id handling.
+     */
+    fun setIntParam(param: Int, value: Int) {
+        dlog(TAG, "setIntParam(param=$param, value=$value)")
+        checkStatus(setParameter(param, value))
+    }
+
+    /**
+     * Convenience wrapper that writes a boolean as 0/1 to [param]. All of the
+     * MiSound toggles (3D surround, SoundID, EQ compensation, master effect
+     * enable) use this 0/1 convention on the vendor side.
+     */
+    fun setBooleanParam(param: Int, enabled: Boolean) {
+        setIntParam(param, if (enabled) 1 else 0)
     }
 
     private fun getIntParam(param: Int): Int {

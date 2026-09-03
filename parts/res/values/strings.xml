@@ -21,4 +21,10 @@
     <string name="misound_mode_off">Off</string>
     <string name="misound_mode_intelligent">Intelligent</string>
     <string name="misound_mode_standard">Standard</string>
+    <string name="misound_3d_surround_title">3D Surround</string>
+    <string name="misound_3d_surround_summary">Enable 3D surround processing for stereo sources</string>
+    <string name="misound_sound_id_title">SoundID HRTF</string>
+    <string name="misound_sound_id_summary">Enable SoundID head-related transfer function</string>
+    <string name="misound_eq_compensation_title">MiSound Settings</string>
+    <string name="misound_eq_compensation_summary">Enable personalised ear-response EQ</string>
 </resources>
