@@ -10,6 +10,7 @@ persist.vendor.cne.feature=1
 # Media
 media.aac_51_output_enabled=true
 ro.media.xml_variant.profiles=_canoe_v2
+vendor.mm.enable.qcom_parser=16777215
 
 # Netmgr
 persist.data.df.agg.dl_pkt=10

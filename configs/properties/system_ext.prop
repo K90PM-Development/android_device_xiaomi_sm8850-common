@@ -1,6 +1,12 @@
 # Audio
 ro.audio.ihaladaptervendorextension_enabled=true
 
+# Bluetooth
+bluetooth.core.le.max_number_of_concurrent_connections=10
+bluetooth.leaudio.dual_bidirection_swb.supported=true
+persist.bluetooth.leaudio.notify.idle.during.call=true
+ro.bluetooth.leaudio_offload.supported=true
+
 # DPM
 persist.vendor.dpm.feature=11
 

@@ -86,6 +86,14 @@ PRODUCT_PACKAGES += \
     qti-audio-types-aidl-V1-ndk.vendor \
     qtiaudiohalvendorextn
 
+PRODUCT_PACKAGES += \
+    libagm_compress_plugin \
+    libagm_mixer_plugin \
+    libagm_pcm_plugin \
+    libpaleventnotifier \
+    libpalipcservice \
+    libsndcardparser
+
 AUDIO_HAL_DIR := hardware/qcom-caf/sm8850/audio/primary-hal/configs/canoe
 
 PRODUCT_COPY_FILES += \
@@ -109,7 +117,10 @@ PRODUCT_COPY_FILES += \
 
 # Bluetooth
 PRODUCT_PACKAGES += \
-    android.hardware.bluetooth.audio-impl
+    android.hardware.bluetooth.audio-impl \
+    lib_bt_aptx \
+    lib_bt_ble \
+    lib_bt_bundle
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.bluetooth.xml \
@@ -130,6 +141,18 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.raw.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.raw.xml
 
 # Display
+PRODUCT_PACKAGES += \
+    android.hardware.graphics.composer3-V4-ndk.vendor \
+    android.hardware.graphics.mapper@4.0-impl-qti-display \
+    init.qti.display_boot.rc \
+    init.qti.display_boot.sh \
+    vendor.qti.hardware.display.aiqe-V3-ndk.vendor \
+    vendor.qti.hardware.display.allocator-service \
+    vendor.qti.hardware.display.composer3-V1-ndk.vendor \
+    vendor.qti.hardware.display.config-V13-ndk.vendor \
+    vendor.qti.hardware.display.demura-service \
+    vendor.qti.hardware.display.snapalloc-impl
+
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.touchscreen.multitouch.jazzhand.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml
 
@@ -176,6 +199,12 @@ TARGET_USES_VULKAN := true
 # Hypsy
 PRODUCT_PACKAGES += \
     xiaomi.system.hypsys.common-service
+
+# IPACM
+PRODUCT_PACKAGES += \
+    ipacm \
+    IPACM_cfg.xml \
+    IPACM_Filter_cfg.xml
 
 # IR
 PRODUCT_PACKAGES += \
