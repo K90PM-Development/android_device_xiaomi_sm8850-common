@@ -93,6 +93,7 @@
 
 # Micharge
 /(vendor|system/vendor)/bin/hw/vendor.xiaomi.hardware.micharge-service-dummy u:object_r:hal_micharge_default_exec:s0
+/dev/smart_charge_cdev u:object_r:vendor_smart_charge_device:s0
 
 # MliPay
 /(odm|vendor/odm|system/vendor)/bin/mlipayd u:object_r:hal_mlipay_default_exec:s0

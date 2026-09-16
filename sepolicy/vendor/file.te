@@ -13,6 +13,9 @@ type vendor_miev_device, dev_type;
 # Charger
 type vendor_sysfs_qcom_battery, fs_type, sysfs_type;
 type vendor_sysfs_xm_power, fs_type, sysfs_type;
+# /dev/smart_charge_cdev is a char device node, so it needs a dev_type;
+# reusing the sysfs type above trips the sysfs_type:dir neverallow.
+type vendor_smart_charge_device, dev_type;
 
 # Diag
 type minidump_data_file, data_file_type, file_type;
