@@ -62,5 +62,8 @@ type sysfs_tp_virtual_prox, fs_type, sysfs_type;
 type touchreport_data_file, data_file_type, file_type;
 type vendor_data_touchreport_file, data_file_type, file_type;
 
+# ViPER4Android
+type vendor_v4a_audio_data_file, file_type, data_file_type, mlstrustedobject;
+
 # Wlan
 type vendor_mac_vendor_data_file, data_file_type, file_type, mlstrustedobject;
