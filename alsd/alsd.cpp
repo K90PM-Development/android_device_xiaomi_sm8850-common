@@ -31,30 +31,32 @@
 
 #include <android/binder_manager.h>
 #include <android/binder_parcel.h>
+#include <fcntl.h>
 #include <log/log.h>
+#include <unistd.h>
 
 #include <cerrno>
 #include <cstdio>
+#include <cstring>
+#include <cstdlib>
 #include <ctime>
 
 namespace {
 
 constexpr char kService[] =
         "vendor.xiaomi.sensor.citsensorservice.ICitSensorService/default";
-// A remote binder has to be associated with a class before it will accept a
-// transaction. We never receive calls, so the callbacks are stubs.
 constexpr char kDescriptor[] =
         "vendor.xiaomi.sensor.citsensorservice.ICitSensorService";
-constexpr char kBacklight[] = "/sys/class/backlight/panel0-backlight/brightness";
+constexpr char kBacklightPanel0[] =
+        "/sys/class/backlight/panel0-backlight/brightness";
+constexpr char kBacklightPanel1[] =
+        "/sys/class/backlight/panel1-backlight/brightness";
 
 constexpr transaction_code_t kSetBrightness = 12;
 constexpr transaction_code_t kTriggerCwbDump = 9;
 
-// The panel only needs resampling about as fast as auto-brightness reacts.
 constexpr long kPeriodMs = 300;
-// With the screen off there is no panel light to cancel and nothing reading
-// lux, so back right off instead of spinning.
-constexpr long kIdlePeriodMs = 2000;
+constexpr long kIdlePeriodMs = 1500;
 
 void* onCreate(void* args) {
     return args;
@@ -78,27 +80,33 @@ void sleepMs(long ms) {
     nanosleep(&ts, nullptr);
 }
 
-int readBacklight() {
-    FILE* f = fopen(kBacklight, "re");
-    if (f == nullptr) return -1;
-    int value = -1;
-    if (fscanf(f, "%d", &value) != 1) value = -1;
-    fclose(f);
-    return value;
+int readBacklightFd(int fd) {
+    if (fd < 0) return -1;
+
+    char buf[16] = {0};
+    ssize_t bytes = pread(fd, buf, sizeof(buf) - 1, 0);
+    if (bytes <= 0) return -1;
+
+    buf[bytes] = '\0';
+    return atoi(buf);
 }
 
-// Returns false if the transaction could not be delivered, which is how we
-// notice the service has died.
 bool transact(AIBinder* binder, transaction_code_t code, int32_t a, bool hasRest,
               int32_t b, bool c) {
     AParcel* in = nullptr;
     AParcel* out = nullptr;
 
     if (AIBinder_prepareTransaction(binder, &in) != STATUS_OK) return false;
-    if (AParcel_writeInt32(in, a) != STATUS_OK) return false;
+    if (AParcel_writeInt32(in, a) != STATUS_OK) {
+        AParcel_delete(in);
+        return false;
+    }
     if (hasRest) {
-        if (AParcel_writeInt32(in, b) != STATUS_OK) return false;
-        if (AParcel_writeBool(in, c) != STATUS_OK) return false;
+        if (AParcel_writeInt32(in, b) != STATUS_OK ||
+            AParcel_writeBool(in, c) != STATUS_OK) {
+            AParcel_delete(in);
+            return false;
+        }
     }
 
     binder_status_t status = AIBinder_transact(binder, code, &in, &out, 0);
@@ -110,36 +118,58 @@ bool transact(AIBinder* binder, transaction_code_t code, int32_t a, bool hasRest
 
 int main() {
     while (true) {
-        // waitForService blocks until citsensorservice is up, so this also
-        // covers the service restarting under us.
+        int fd0 = open(kBacklightPanel0, O_RDONLY | O_CLOEXEC);
+        int fd1 = open(kBacklightPanel1, O_RDONLY | O_CLOEXEC);
+
+        if (fd0 < 0 && fd1 < 0) {
+            ALOGE("Failed to open both %s and %s: %s, retrying...",
+                  kBacklightPanel0, kBacklightPanel1, strerror(errno));
+            sleepMs(kIdlePeriodMs);
+            continue;
+        }
+
         AIBinder* binder = AServiceManager_waitForService(kService);
         if (binder == nullptr) {
-            ALOGE("%s is unavailable, retrying", kService);
+            ALOGE("%s is unavailable, retrying...", kService);
+            if (fd0 >= 0) close(fd0);
+            if (fd1 >= 0) close(fd1);
             sleepMs(kIdlePeriodMs);
             continue;
         }
 
         if (!AIBinder_associateClass(binder, interfaceClass())) {
-            ALOGE("failed to associate %s", kDescriptor);
+            ALOGE("Failed to associate class %s", kDescriptor);
             AIBinder_decStrong(binder);
+            if (fd0 >= 0) close(fd0);
+            if (fd1 >= 0) close(fd1);
             sleepMs(kIdlePeriodMs);
             continue;
         }
 
-        ALOGI("driving the under-display ALS panel compensation");
+        ALOGI("Connected to citsensorservice (fd0: %d, fd1: %d)", fd0, fd1);
+
+        int lastDbv = -1;
 
         while (true) {
-            int dbv = readBacklight();
-            if (dbv <= 0) {
-                // Screen off, or we cannot read the panel. Either way there is
-                // nothing useful to compute.
+            int dbv0 = readBacklightFd(fd0);
+            int dbv1 = readBacklightFd(fd1);
+            int activeDbv = (dbv0 > 0) ? dbv0 : ((dbv1 > 0) ? dbv1 : 0);
+            if (activeDbv <= 0) {
+                lastDbv = activeDbv;
                 sleepMs(kIdlePeriodMs);
                 continue;
             }
 
-            if (!transact(binder, kSetBrightness, dbv, false, 0, false) ||
-                !transact(binder, kTriggerCwbDump, 0, true, 0, true)) {
-                ALOGW("citsensorservice went away, reconnecting");
+            if (activeDbv != lastDbv) {
+                if (!transact(binder, kSetBrightness, activeDbv, false, 0, false)) {
+                    ALOGW("citsensorservice died during setBrightness");
+                    break;
+                }
+                lastDbv = activeDbv;
+            }
+
+            if (!transact(binder, kTriggerCwbDump, 0, true, 0, true)) {
+                ALOGW("citsensorservice died during triggerCwbDump");
                 break;
             }
 
@@ -147,5 +177,9 @@ int main() {
         }
 
         AIBinder_decStrong(binder);
+        if (fd0 >= 0) close(fd0);
+        if (fd1 >= 0) close(fd1);
     }
+
+    return 0;
 }
