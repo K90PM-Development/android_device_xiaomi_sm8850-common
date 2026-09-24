@@ -85,7 +85,9 @@ bluetooth.profile.hap.client.enabled=true
 bluetooth.profile.mcp.server.enabled=true
 bluetooth.profile.vcp.controller.enabled=true
 persist.bluetooth.a2dp_offload.cap=sbc-aac-aptx-aptxhd-ldac-lhdc-mihc
-persist.bluetooth.a2dp_offload.disabled=false
+# Software A2DP: Qualcomm's offload path plays only the left channel for SBC,
+# AAC and aptX (PAL BtFormat_GENERIC). See configs/audio/audio_module_config_primary.xml.
+persist.bluetooth.a2dp_offload.disabled=true
 persist.bluetooth.leaudio_offload.disabled=false
 persist.sys.fflag.override.settings_bluetooth_hearing_aid=true
 persist.vendor.bt.aac_frm_ctl.enabled=true
