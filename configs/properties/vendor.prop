@@ -70,6 +70,9 @@ vendor.qc2audio.per_frame.flac.dec.enabled=true
 vendor.qc2audio.suspend.enabled=true
 
 # Bluetooth
+persist.vendor.bt.a2dp_offload_cap=sbc-aptx-aptxtws-aptxhd-aac-ldac-lhdc-mihc
+ro.vendor.audio.bt.adapter=15
+ro.vendor.bluetooth.btconfigstore=false
 bluetooth.core.le_audio.codec_extension_aidl.enabled=false
 bluetooth.device.class_of_device=90,2,12
 bluetooth.profile.asha.central.enabled=true
