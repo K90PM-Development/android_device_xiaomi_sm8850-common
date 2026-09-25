@@ -1,0 +1,3 @@
+# Wireless reverse charging: wls_rev_charge/reverse_chg_mode
+allow hal_lineage_powershare_default vendor_sysfs_xm_power:dir search;
+allow hal_lineage_powershare_default vendor_sysfs_xm_power:file rw_file_perms;
