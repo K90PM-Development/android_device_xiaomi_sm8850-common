@@ -1315,7 +1315,6 @@ vendor/lib64/libqti-perfd-client.so
 vendor/lib64/libqti-perfd.so
 vendor/lib64/libqti-perfextn-intf.so
 vendor/lib64/libqti-qape-engine.so
-vendor/lib64/libqti-qesdk-secure.so
 vendor/lib64/libqti-s3tf.so
 vendor/lib64/libqti-scenariod.so
 vendor/lib64/libqti-sslite.so
@@ -1383,18 +1382,6 @@ vendor/bin/init.qti.qcv.sh
 vendor/etc/init/init.qti.qcv.rc
 
 # QESDK
-vendor/etc/seccomp_policy/qesdksec.policy
-vendor/lib64/libqesdk_manager.so
-vendor/lib64/libqesdk_qshsession.so
-vendor/lib64/libqesdk2_0.so
-vendor/lib64/libqesdoem_query_sys.so
-vendor/lib64/vendor.qti.qesdhal-impl.so
-vendor/lib64/vendor.qti.qesdhal@1.0.so
-vendor/lib64/vendor.qti.qesdhal@1.1.so
-vendor/lib64/vendor.qti.qesdhal@1.2.so
-vendor/lib64/vendor.qti.qesdhal@1.3.so
-vendor/lib64/vendor.qti.qesdhalaidl-V2-ndk.so
-vendor/lib64/vendor.qti.qesdsys-V3-ndk.so
 vendor/lib64/vendor.qti.qesdsys-V4-ndk.so
 
 # QMI
@@ -1424,7 +1411,6 @@ vendor/lib64/libqmiservices.so
 vendor/lib64/libqsocket.so
 
 # QSAP mpam
-vendor/bin/qsap_mpamsvc
 vendor/etc/init/vendor.qsap.mpamsvc.rc
 vendor/etc/mpam/MPAMOptConfig.xml
 vendor/etc/mpam/config.json
@@ -1432,7 +1418,6 @@ vendor/etc/mpam/usecases_full.json
 vendor/etc/seccomp_policy/qsap_mpamsvc.policy
 
 # QSAP service
-vendor/bin/qsap_qapeservice
 vendor/etc/init/vendor.qsap.qapeservice.rc
 vendor/etc/seccomp_policy/qsap_qapeservice.policy
 
