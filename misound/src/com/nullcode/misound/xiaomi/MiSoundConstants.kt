@@ -79,6 +79,41 @@ class MiSoundConstants {
         const val DEFAULT_SOUND_ID = 0
         const val DEFAULT_EQ_COMPENSATION = 0
 
+        // ---- Earpiece EQ (DynamicsProcessing pre-EQ, ported from the
+        // EarpieceEQ app in device/xiaomi/earpiece-eq-v0.12-source). ----
+
+        // Master on/off for the earpiece EQ stage. On by default: the bundled
+        // earpiece_eq_defaults.json is imported on first boot and the engine
+        // is a no-op until a speaker profile is set, so a default-on switch
+        // is safe.
+        const val SETTING_KEY_EQ_ENABLED = "misound_eq_enabled"
+        const val DEFAULT_EQ_ENABLED = 1
+
+        // Which speaker channels the EQ is applied to.
+        const val SETTING_KEY_EQ_APPLY_EAR = "misound_eq_apply_ear"
+        const val SETTING_KEY_EQ_APPLY_BOTTOM = "misound_eq_apply_bottom"
+
+        // Behaviour toggles.
+        const val SETTING_KEY_EQ_AUTO_ROTATE = "misound_eq_auto_rotate"
+        const val SETTING_KEY_EQ_AUTO_SUSPEND = "misound_eq_auto_suspend"
+
+        // Per-speaker profiles: preamp (float), band count (int) and the gain
+        // vector (comma-separated string, key carries the band count). Keys
+        // for the bottom speaker mirror the earpiece ones with a _bottom
+        // suffix; gains keys carry the count, e.g. misound_eq_gains_10 /
+        // misound_eq_gains_bottom_32.
+        const val SETTING_KEY_EQ_PREAMP = "misound_eq_preamp"
+        const val SETTING_KEY_EQ_BAND_COUNT = "misound_eq_band_count"
+        const val SETTING_KEY_EQ_GAINS_PREFIX = "misound_eq_gains_"
+        const val SETTING_KEY_EQ_PREAMP_BOTTOM = "misound_eq_preamp_bottom"
+        const val SETTING_KEY_EQ_BAND_COUNT_BOTTOM = "misound_eq_band_count_bottom"
+        const val SETTING_KEY_EQ_GAINS_BOTTOM_PREFIX = "misound_eq_gains_bottom_"
+
+        // First-boot marker: set to 1 after the bundled earpiece_eq_defaults
+        // JSON has been written into the keys above, so the user's own edits
+        // are never overwritten on later boots.
+        const val SETTING_KEY_EQ_INITIALIZED = "misound_eq_initialized"
+
         fun dlog(tag: String, msg: String) {
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(tag, msg)

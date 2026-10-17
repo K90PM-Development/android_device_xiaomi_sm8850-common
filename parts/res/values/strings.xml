@@ -27,4 +27,32 @@
     <string name="misound_sound_id_summary">Enable SoundID head-related transfer function</string>
     <string name="misound_eq_compensation_title">Equalizer Tune</string>
     <string name="misound_eq_compensation_summary">Enable personalised ear-response EQ</string>
+
+    <!-- Earpiece EQ (DynamicsProcessing pre-EQ on the speaker channels) -->
+    <string name="eq_category_title">Earpiece EQ</string>
+    <string name="eq_enabled_title">Enable earpiece EQ</string>
+    <string name="eq_enabled_summary">Apply a custom per-speaker EQ to the built-in speakers</string>
+    <string name="eq_apply_ear_title">EQ on earpiece</string>
+    <string name="eq_apply_ear_summary">Apply the earpiece profile to the earpiece channel</string>
+    <string name="eq_apply_bottom_title">EQ on bottom speaker</string>
+    <string name="eq_apply_bottom_summary">Apply the bottom-speaker profile to the bottom speaker channel</string>
+    <string name="eq_auto_rotate_title">Follow screen rotation</string>
+    <string name="eq_auto_rotate_summary">Swap the two profiles with L/R when the screen is upside down</string>
+    <string name="eq_auto_suspend_title">Off while using headphones</string>
+    <string name="eq_auto_suspend_summary">Suspend the EQ while wired/USB/Bluetooth audio is connected</string>
+    <string name="eq_edit_earpiece">Edit earpiece profile</string>
+    <string name="eq_edit_bottom">Edit bottom speaker profile</string>
+    <string name="eq_preamp_title">Preamp</string>
+    <string name="eq_bands_message">%1$s dB preamp, %2$d active bands</string>
+    <string name="eq_band_freq_hz">%1$d Hz</string>
+    <string name="eq_band_freq_khz">%1$s kHz</string>
+    <string name="eq_gain_value">%1$s dB</string>
+    <string name="eq_gain_seekbar_label">%1$s: %2$s</string>
+    <string name="eq_reset_title">Reset to flat</string>
+    <string name="eq_reset_message">Reset this profile to flat (0 dB everywhere)?</string>
+    <string name="eq_reset_ok">Reset</string>
+    <string name="eq_reset_cancel">Cancel</string>
+    <string name="eq_reset_summary">Set every band of this profile back to 0 dB</string>
+    <string name="eq_reset_earpiece_title">Reset earpiece profile</string>
+    <string name="eq_reset_bottom_title">Reset bottom speaker profile</string>
 </resources>

@@ -39,4 +39,56 @@
         android:summary="@string/misound_eq_compensation_summary"
         android:defaultValue="false" />
 
+    <PreferenceCategory android:title="@string/eq_category_title">
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_enabled"
+            android:title="@string/eq_enabled_title"
+            android:summary="@string/eq_enabled_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_apply_ear"
+            android:title="@string/eq_apply_ear_title"
+            android:summary="@string/eq_apply_ear_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_apply_bottom"
+            android:title="@string/eq_apply_bottom_title"
+            android:summary="@string/eq_apply_bottom_summary"
+            android:defaultValue="true" />
+
+        <Preference
+            android:key="misound_eq_edit_earpiece"
+            android:title="@string/eq_edit_earpiece" />
+
+        <Preference
+            android:key="misound_eq_edit_bottom"
+            android:title="@string/eq_edit_bottom" />
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_auto_rotate"
+            android:title="@string/eq_auto_rotate_title"
+            android:summary="@string/eq_auto_rotate_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_auto_suspend"
+            android:title="@string/eq_auto_suspend_title"
+            android:summary="@string/eq_auto_suspend_summary"
+            android:defaultValue="true" />
+
+        <Preference
+            android:key="misound_eq_reset_earpiece"
+            android:title="@string/eq_reset_earpiece_title"
+            android:summary="@string/eq_reset_summary" />
+
+        <Preference
+            android:key="misound_eq_reset_bottom"
+            android:title="@string/eq_reset_bottom_title"
+            android:summary="@string/eq_reset_summary" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

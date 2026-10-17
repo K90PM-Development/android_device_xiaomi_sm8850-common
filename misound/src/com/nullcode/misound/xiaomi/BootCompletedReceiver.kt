@@ -25,5 +25,9 @@ class BootCompletedReceiver : BroadcastReceiver() {
         val controller = MiSoundController.getInstance(context)
         controller.onBootCompleted()
         controller.registerSettingsObserver()
+
+        Log.i(TAG, "Boot completed, starting earpiece EQ controller")
+        val eqController = MiSoundEqController.getInstance(context)
+        eqController.onBootCompleted()
     }
 }
