@@ -10,6 +10,7 @@ cc_library {
     srcs: ["UdfpsHandler.cpp"],
     shared_libs: [
         "libbase",
+        "libsensorndkbridge",
     ],
     static_libs: [
         "android.hardware.biometrics.fingerprint-V4-ndk",

@@ -3,6 +3,9 @@ type vendor_hal_fingerprint_service_xiaomi, hal_service_type, protected_service,
 add_service(hal_fingerprint_default, vendor_hal_fingerprint_service_xiaomi)
 hal_client_domain(hal_fingerprint_default, vendor_hal_perf)
 
+# android.frameworks.sensorservice through libsensorndkbridge
+binder_call(hal_fingerprint_default, system_server)
+
 get_prop(hal_fingerprint_default, vendor_panel_info_prop)
 set_prop(hal_fingerprint_default, vendor_fp_prop)
 

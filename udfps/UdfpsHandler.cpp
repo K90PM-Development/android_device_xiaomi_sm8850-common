@@ -10,12 +10,20 @@
 #include <android-base/logging.h>
 #include <android-base/unique_fd.h>
 
-#include <fstream>
-#include <thread>
+#include <android/looper.h>
+#include <android/sensor.h>
+
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>
 #include <linux/uinput.h>
+
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <fstream>
+#include <mutex>
+#include <thread>
 
 #include "UdfpsHandler.h"
 
@@ -30,6 +38,20 @@
 #define FINGERPRINT_ACQUIRED_VENDOR 7
 
 using ::aidl::android::hardware::biometrics::fingerprint::AcquiredInfo;
+
+/* Exported by libsensorndkbridge but not declared in the NDK sensor header. */
+extern "C" float ASensor_getMaxRange(const ASensor* sensor);
+
+/*
+ * The proximity sensor is only enabled while a press needs classifying, and
+ * stays on for this long after the last one so a burst of touches does not pay
+ * the activation cost every time.
+ */
+static constexpr auto PROXIMITY_LEASE = std::chrono::seconds(2);
+
+/* Upper bound on how long a press waits for a reading before it is let through
+ * unclassified, so a sensor that never reports cannot break unlocking. */
+static constexpr auto PROXIMITY_READ_TIMEOUT = std::chrono::milliseconds(300);
 
 namespace {
 
@@ -56,6 +78,8 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
             ioctl(mUinputFd.get(), UI_DEV_SETUP, &usetup);
             ioctl(mUinputFd.get(), UI_DEV_CREATE);
         }
+
+        startProximityMonitor();
 
         std::thread([this]() {
             android::base::unique_fd fd(open(FOD_STATUS_PATH, O_RDONLY));
@@ -92,7 +116,19 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
 
                         if (pressed != lastState) {
                             lastState = pressed;
-                            setFingerDown(pressed);
+
+                            /*
+                             * fod_press_status reports contact with the FOD area, not a
+                             * confirmed finger: fabric in a pocket triggers it too. The
+                             * proximity gate drops the press when the device is covered,
+                             * otherwise every pocket touch starts a scan that fails and
+                             * plays the reject haptic.
+                             */
+                            if (pressed) {
+                                gatePress();
+                            } else {
+                                releasePress();
+                            }
                         }
                     }
                 }
@@ -102,20 +138,24 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
 
     void onFingerDown(uint32_t /*x*/, uint32_t /*y*/, float /*minor*/, float /*major*/) {
         LOG(INFO) << __func__;
-        setFingerDown(true);
+        gatePress();
     }
 
     void onFingerUp() {
         LOG(INFO) << __func__;
-        setFingerDown(false);
+        releasePress();
     }
 
     void onAcquired(int32_t result, int32_t vendorCode) {
         LOG(INFO) << __func__ << " result: " << result << " vendorCode: " << vendorCode;
         if (result != FINGERPRINT_ACQUIRED_VENDOR) {
-            setFingerDown(false);
+            /*
+             * Only report a release once the finger is actually lifted (touch node
+             * transition or onFingerUp), not on intermediate scan results: sending
+             * a release while the scan is still running makes the HAL drop it.
+             */
             if (static_cast<AcquiredInfo>(result) == AcquiredInfo::GOOD) {
-                setFodStatus(FOD_STATUS_OFF);                
+                setFodStatus(FOD_STATUS_OFF);
                 wakeDevice();
             }
         } else if (vendorCode == 201 || vendorCode == 202) {
@@ -124,32 +164,253 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
              * vendorCode = 202 waiting for fingerprint enroll
              */
             setFodStatus(FOD_STATUS_ON);
-        } else if (vendorCode == 44) {
-            /*
-             * vendorCode = 44 fingerprint scan failed
-             */
-            setFingerDown(false);
         }
     }
 
     void cancel() {
         LOG(INFO) << __func__;
-        setFingerDown(false);
+        releasePress();
         setFodStatus(FOD_STATUS_OFF);
     }
 
   private:
     fingerprint_device_t* mDevice;
     android::base::unique_fd mUinputFd;
+    std::mutex mFingerDownMutex;
+    bool mFingerDown = false;
+
+    /*
+     * Proximity gate.
+     *
+     * The sensor is not kept running: it is enabled when a press needs to be
+     * classified and disabled again once PROXIMITY_LEASE expires, so an idle
+     * device burns no sensor power and the worker thread sleeps on a condition
+     * variable instead of waking periodically. The lease only avoids paying the
+     * enable/read cost again for a burst of touches.
+     *
+     * All state below is guarded by mProxMutex, which is also held while a
+     * press is decided so a release cannot race past a deferred press.
+     */
+    std::mutex mProxMutex;
+    std::condition_variable mProxCv;
+    ALooper* mProxLooper = nullptr;
+    ASensorEventQueue* mProxQueue = nullptr;
+    const ASensor* mProxSensor = nullptr;
+    float mProxMaxRange = 0;
+    bool mProxSetupDone = false;
+    bool mProxSetupOk = false;
+    bool mProxUnavailable = false;
+    bool mProxSensorEnabled = false;
+    bool mProxHasValue = false;
+    bool mProxNear = false;
+    bool mProxPendingPress = false;
+    std::chrono::steady_clock::time_point mProxLeaseEnd;
+    std::chrono::steady_clock::time_point mProxPressDeadline;
+
+    void startProximityMonitor() {
+        std::thread([this]() { proximityThread(); }).detach();
+    }
+
+    /* Classify a press. Never blocks: an existing reading is used right away,
+     * otherwise the press is deferred for at most PROXIMITY_READ_TIMEOUT and
+     * applied by the proximity thread once the sensor reports. */
+    void gatePress() {
+        std::lock_guard<std::mutex> lock(mProxMutex);
+
+        if (mProxUnavailable || !mProxSetupDone) {
+            /* Fail open: while there is no usable sensor, keep the old
+             * unconditional behaviour. */
+            setFingerDown(true);
+            return;
+        }
+
+        if (isFingerDown()) {
+            return;
+        }
+
+        if (!mProxPendingPress) {
+            mProxPendingPress = true;
+            mProxPressDeadline = std::chrono::steady_clock::now() + PROXIMITY_READ_TIMEOUT;
+        }
+
+        if (mProxSensorEnabled) {
+            mProxLeaseEnd = std::chrono::steady_clock::now() + PROXIMITY_LEASE;
+            ALooper_wake(mProxLooper);
+        } else {
+            mProxCv.notify_one();
+        }
+    }
+
+    void releasePress() {
+        std::lock_guard<std::mutex> lock(mProxMutex);
+        mProxPendingPress = false;
+        setFingerDown(false);
+    }
+
+    bool isFingerDown() {
+        std::lock_guard<std::mutex> lock(mFingerDownMutex);
+        return mFingerDown;
+    }
+
+    void applyPendingPressLocked() {
+        mProxPendingPress = false;
+        if (mProxNear) {
+            LOG(INFO) << "Ignoring FOD press, proximity sensor covered";
+        } else {
+            setFingerDown(true);
+        }
+    }
+
+    void allowPendingPressLocked() {
+        mProxPendingPress = false;
+        setFingerDown(true);
+    }
+
+    void proximitySetup() {
+        ASensorManager* manager = ASensorManager_getInstanceForPackage(
+                "android.hardware.biometrics.fingerprint-service.xiaomi");
+        const ASensor* sensor = manager != nullptr
+                                        ? ASensorManager_getDefaultSensor(
+                                                  manager, ASENSOR_TYPE_PROXIMITY)
+                                        : nullptr;
+        ALooper* looper = sensor != nullptr
+                                  ? ALooper_prepare(ALOOPER_PREPARE_ALLOW_NON_CALLBACKS)
+                                  : nullptr;
+        ASensorEventQueue* queue =
+                looper != nullptr
+                        ? ASensorManager_createEventQueue(manager, looper, 0, nullptr, nullptr)
+                        : nullptr;
+
+        std::lock_guard<std::mutex> lock(mProxMutex);
+        if (queue == nullptr) {
+            LOG(ERROR) << "No usable proximity sensor, FOD presses will not be gated";
+            mProxUnavailable = true;
+        } else {
+            mProxLooper = looper;
+            mProxQueue = queue;
+            mProxSensor = sensor;
+            mProxMaxRange = ASensor_getMaxRange(sensor);
+            mProxSetupOk = true;
+            LOG(INFO) << "Proximity gate ready, max range: " << mProxMaxRange;
+        }
+        mProxSetupDone = true;
+        mProxCv.notify_all();
+    }
+
+    void proximityThread() {
+        /* Setup talks to sensor service and can block until it is available, so
+         * it runs on its own thread: presses keep working, ungated, meanwhile. */
+        std::thread([this]() { proximitySetup(); }).detach();
+
+        std::unique_lock<std::mutex> lock(mProxMutex);
+        mProxCv.wait(lock, [this]() { return mProxSetupDone; });
+        if (!mProxSetupOk) {
+            return;
+        }
+
+        ASensorEventQueue* queue = mProxQueue;
+        const ASensor* sensor = mProxSensor;
+        const float maxRange = mProxMaxRange;
+
+        for (;;) {
+            if (!mProxSensorEnabled) {
+                if (!mProxPendingPress) {
+                    mProxCv.wait(lock);
+                    continue;
+                }
+
+                /* Discard anything left over from the previous lease so it
+                 * cannot be mistaken for a fresh reading. */
+                ASensorEvent stale;
+                while (ASensorEventQueue_getEvents(queue, &stale, 1) > 0) {
+                }
+
+                if (ASensorEventQueue_enableSensor(queue, sensor) < 0) {
+                    LOG(ERROR)
+                            << "Failed to enable proximity sensor, FOD presses will not be gated";
+                    mProxUnavailable = true;
+                    allowPendingPressLocked();
+                    return;
+                }
+
+                mProxSensorEnabled = true;
+                mProxHasValue = false;
+                mProxLeaseEnd = std::chrono::steady_clock::now() + PROXIMITY_LEASE;
+                LOG(INFO) << "Proximity sensor enabled";
+            }
+
+            if (mProxPendingPress && mProxHasValue) {
+                applyPendingPressLocked();
+            }
+
+            const auto now = std::chrono::steady_clock::now();
+            if (now >= mProxLeaseEnd) {
+                ASensorEventQueue_disableSensor(queue, sensor);
+                mProxSensorEnabled = false;
+                mProxHasValue = false;
+                LOG(INFO) << "Proximity sensor disabled";
+                continue;
+            }
+
+            if (mProxPendingPress && now >= mProxPressDeadline) {
+                LOG(WARNING) << "No proximity reading in time, allowing FOD press";
+                allowPendingPressLocked();
+            }
+
+            /* One wakeup per lease (or per press while waiting for the first
+             * reading); sensor events wake pollOnce on their own. */
+            auto wakeAt = mProxLeaseEnd;
+            if (mProxPendingPress && mProxPressDeadline < wakeAt) {
+                wakeAt = mProxPressDeadline;
+            }
+            auto waitMs =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(wakeAt - now).count();
+            if (waitMs < 1) {
+                waitMs = 1;
+            }
+
+            lock.unlock();
+            int ident = ALooper_pollOnce(static_cast<int>(waitMs), nullptr, nullptr, nullptr);
+            lock.lock();
+
+            if (ident == ALOOPER_POLL_ERROR) {
+                LOG(ERROR) << "Failed to poll proximity events, FOD presses will not be gated";
+                ASensorEventQueue_disableSensor(queue, sensor);
+                mProxSensorEnabled = false;
+                mProxUnavailable = true;
+                allowPendingPressLocked();
+                return;
+            }
+
+            ASensorEvent event;
+            while (ASensorEventQueue_getEvents(queue, &event, 1) > 0) {
+                if (event.type != ASENSOR_TYPE_PROXIMITY) {
+                    continue;
+                }
+
+                bool near = maxRange > 0 ? event.distance < maxRange : event.distance == 0;
+                if (!mProxHasValue || near != mProxNear) {
+                    LOG(INFO) << "Proximity state changed: " << (near ? "near" : "far");
+                }
+                mProxNear = near;
+                mProxHasValue = true;
+            }
+        }
+    }
 
     void setFodStatus(int value) {
         set(FOD_STATUS_PATH, value);
     }
 
     void setFingerDown(bool pressed) {
-        if (pressed) {
-            mDevice->extCmd(mDevice, COMMAND_FOD_PRESS_STATUS, PARAM_FOD_PRESSED);
+        std::lock_guard<std::mutex> lock(mFingerDownMutex);
+        if (mFingerDown == pressed) {
+            return;
         }
+        mFingerDown = pressed;
+
+        mDevice->extCmd(mDevice, COMMAND_FOD_PRESS_STATUS,
+                        pressed ? PARAM_FOD_PRESSED : PARAM_FOD_RELEASED);
     }
 
     void wakeDevice() {

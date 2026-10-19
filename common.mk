@@ -169,6 +169,7 @@ PRODUCT_PACKAGES += \
 $(call soong_config_set,XIAOMI_BIOMETRICS_FINGERPRINT,IMPL_VER,V2)
 PRODUCT_PACKAGES += \
     android.hardware.biometrics.fingerprint-service.xiaomi \
+    libsensorndkbridge \
     libudfpshandler
 
 PRODUCT_COPY_FILES += \
