@@ -53,6 +53,14 @@ static constexpr auto PROXIMITY_LEASE = std::chrono::seconds(2);
  * unclassified, so a sensor that never reports cannot break unlocking. */
 static constexpr auto PROXIMITY_READ_TIMEOUT = std::chrono::milliseconds(300);
 
+/*
+ * The sensor HAL replays its last known state right after a subscription starts
+ * and only reports the real sample around 200 ms later (observed on myron).
+ * That replay is what let pocket touches through, so a press is not classified
+ * until this much time has passed since the sensor was enabled.
+ */
+static constexpr auto PROXIMITY_SETTLE = std::chrono::milliseconds(300);
+
 namespace {
 
 template <typename T>
@@ -205,15 +213,17 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
     bool mProxNear = false;
     bool mProxPendingPress = false;
     std::chrono::steady_clock::time_point mProxLeaseEnd;
+    std::chrono::steady_clock::time_point mProxTrustAt;
     std::chrono::steady_clock::time_point mProxPressDeadline;
+    bool mProxSettled = false;
 
     void startProximityMonitor() {
         std::thread([this]() { proximityThread(); }).detach();
     }
 
-    /* Classify a press. Never blocks: an existing reading is used right away,
-     * otherwise the press is deferred for at most PROXIMITY_READ_TIMEOUT and
-     * applied by the proximity thread once the sensor reports. */
+    /* Classify a press. Never blocks: once the sensor has settled an existing
+     * reading is used right away, otherwise the press is deferred and applied
+     * by the proximity thread once a trusted sample arrives. */
     void gatePress() {
         std::lock_guard<std::mutex> lock(mProxMutex);
 
@@ -228,13 +238,34 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
             return;
         }
 
+        const auto now = std::chrono::steady_clock::now();
+        /* A press while the sensor is already running only has to wait for the
+         * current lease's settle point; a cold start waits a full window. */
+        if (mProxSensorEnabled) {
+            if (!mProxSettled && now + PROXIMITY_SETTLE < mProxTrustAt) {
+                mProxTrustAt = now + PROXIMITY_SETTLE;
+            }
+        } else {
+            mProxTrustAt = now + PROXIMITY_SETTLE;
+        }
+
+        if (mProxSensorEnabled && now >= mProxTrustAt && mProxHasValue) {
+            /* Trusted reading already in hand: decide without touching the
+             * deadline machinery. */
+            applyPendingPressLocked();
+            return;
+        }
+
         if (!mProxPendingPress) {
             mProxPendingPress = true;
-            mProxPressDeadline = std::chrono::steady_clock::now() + PROXIMITY_READ_TIMEOUT;
+            mProxPressDeadline = mProxTrustAt + PROXIMITY_READ_TIMEOUT;
+        } else {
+            const auto at = mProxTrustAt + PROXIMITY_READ_TIMEOUT;
+            mProxPressDeadline = at < mProxPressDeadline ? at : mProxPressDeadline;
         }
 
         if (mProxSensorEnabled) {
-            mProxLeaseEnd = std::chrono::steady_clock::now() + PROXIMITY_LEASE;
+            mProxLeaseEnd = now + PROXIMITY_LEASE;
             ALooper_wake(mProxLooper);
         } else {
             mProxCv.notify_one();
@@ -335,15 +366,22 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
 
                 mProxSensorEnabled = true;
                 mProxHasValue = false;
-                mProxLeaseEnd = std::chrono::steady_clock::now() + PROXIMITY_LEASE;
+                mProxSettled = false;
+                mProxTrustAt = std::chrono::steady_clock::now() + PROXIMITY_SETTLE;
+                mProxLeaseEnd = mProxTrustAt + PROXIMITY_LEASE;
                 LOG(INFO) << "Proximity sensor enabled";
             }
 
-            if (mProxPendingPress && mProxHasValue) {
+            const auto now = std::chrono::steady_clock::now();
+
+            if (mProxSensorEnabled && now >= mProxTrustAt) {
+                mProxSettled = true;
+            }
+
+            if (mProxPendingPress && mProxHasValue && mProxSettled) {
                 applyPendingPressLocked();
             }
 
-            const auto now = std::chrono::steady_clock::now();
             if (now >= mProxLeaseEnd) {
                 ASensorEventQueue_disableSensor(queue, sensor);
                 mProxSensorEnabled = false;
@@ -357,11 +395,17 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
                 allowPendingPressLocked();
             }
 
-            /* One wakeup per lease (or per press while waiting for the first
-             * reading); sensor events wake pollOnce on their own. */
+            /* Sleep until the lease ends, or earlier to re-evaluate a press:
+             * at the settle deadline first, then at the read timeout. Sensor
+             * events wake pollOnce on their own. */
             auto wakeAt = mProxLeaseEnd;
-            if (mProxPendingPress && mProxPressDeadline < wakeAt) {
-                wakeAt = mProxPressDeadline;
+            if (mProxPendingPress) {
+                if (mProxTrustAt < wakeAt) {
+                    wakeAt = mProxTrustAt;
+                }
+                if (mProxPressDeadline < wakeAt) {
+                    wakeAt = mProxPressDeadline;
+                }
             }
             auto waitMs =
                     std::chrono::duration_cast<std::chrono::milliseconds>(wakeAt - now).count();
@@ -389,8 +433,10 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
                 }
 
                 bool near = maxRange > 0 ? event.distance < maxRange : event.distance == 0;
-                if (!mProxHasValue || near != mProxNear) {
-                    LOG(INFO) << "Proximity state changed: " << (near ? "near" : "far");
+                const bool trusted = std::chrono::steady_clock::now() >= mProxTrustAt;
+                if (!mProxHasValue || near != mProxNear || !trusted) {
+                    LOG(INFO) << "Proximity state: " << (near ? "near" : "far")
+                              << (trusted ? "" : " (settling, not trusted yet)");
                 }
                 mProxNear = near;
                 mProxHasValue = true;
