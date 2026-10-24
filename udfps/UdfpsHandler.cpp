@@ -82,6 +82,9 @@ static void set(const std::string& path, const T& value) {
 
 class XiaomiSM8850UdfpsHander : public UdfpsHandler {
   public:
+    /* Where a press came from; exactly one source releases the press it started. */
+    enum class PressSource { Node, Framework };
+
     void init(fingerprint_device_t* device) {
         mDevice = device;
 
@@ -149,11 +152,7 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
                          */
                         if (pressed) {
                             if (isScreenOff() && !isCovered()) {
-                                {
-                                    std::lock_guard<std::mutex> lock(mFingerDownMutex);
-                                    mNodePressed = true;
-                                }
-                                setFingerDown(true);
+                                setFingerDown(true, PressSource::Node);
                             }
                         } else if (takeNodePress()) {
                             setFingerDown(false);
@@ -169,10 +168,13 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
      * exactly when the touch node path stands aside, so a press is always
      * reported once and never needs proximity gating: the pocket can only cover
      * a device whose screen is off.
+     *
+     * The framework owns the press from here on, so the touch node must not end
+     * it: a screen that turns on mid-touch would otherwise cancel its scan.
      */
     void onFingerDown(uint32_t /*x*/, uint32_t /*y*/, float /*minor*/, float /*major*/) {
         LOG(INFO) << __func__;
-        setFingerDown(true);
+        setFingerDown(true, PressSource::Framework);
     }
 
     void onFingerUp() {
@@ -180,17 +182,28 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
         setFingerDown(false);
     }
 
+    void onAuthenticationSucceeded() {
+        LOG(INFO) << __func__;
+        endGesture();
+    }
+
+    void onAuthenticationFailed() {
+        LOG(INFO) << __func__;
+        endGesture();
+    }
+
     void onAcquired(int32_t result, int32_t vendorCode) {
         LOG(INFO) << __func__ << " result: " << result << " vendorCode: " << vendorCode;
         if (result != FINGERPRINT_ACQUIRED_VENDOR) {
             /*
-             * Only report a release once the finger is actually lifted (touch node
-             * transition or onFingerUp), not on intermediate scan results: sending
-             * a release while the scan is still running makes the HAL drop it.
+             * Intermediate results must not release the press: sending a release
+             * while the scan is still running makes the HAL drop it. The release
+             * comes from onFingerUp or endGesture instead.
              */
             if (static_cast<AcquiredInfo>(result) == AcquiredInfo::GOOD) {
                 setFodStatus(FOD_STATUS_OFF);
                 wakeDevice();
+                endGesture();
             }
         } else if (vendorCode == 201 || vendorCode == 202) {
             /*
@@ -213,13 +226,11 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
     android::base::unique_fd mUinputFd;
     std::mutex mFingerDownMutex;
     bool mFingerDown = false;
-    /* Whether the current press came from the touch node, so only that source
-     * releases it. Guarded by mFingerDownMutex. */
+    /* Exactly one source releases the press it started. Both guarded by
+     * mFingerDownMutex. */
+    bool mFrameworkPress = false;
     bool mNodePressed = false;
 
-    /* Claim the touch node's press for release. Returns false when the current
-     * press came from the framework, in which case the node must not release
-     * it. */
     bool takeNodePress() {
         std::lock_guard<std::mutex> lock(mFingerDownMutex);
         if (!mNodePressed) {
@@ -228,6 +239,26 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
 
         mNodePressed = false;
         return true;
+    }
+
+    /*
+     * onFingerUp is not guaranteed: the framework tears the session down on
+     * success and drops the late pointer up, so a latched press would eat every
+     * later press. Release from the result instead.
+     */
+    void endGesture() {
+        std::lock_guard<std::mutex> lock(mFingerDownMutex);
+        if (!mFrameworkPress) {
+            return;
+        }
+
+        mFrameworkPress = false;
+        if (!mFingerDown) {
+            return;
+        }
+        mFingerDown = false;
+
+        mDevice->extCmd(mDevice, COMMAND_FOD_PRESS_STATUS, PARAM_FOD_RELEASED);
     }
 
     /*
@@ -503,12 +534,25 @@ class XiaomiSM8850UdfpsHander : public UdfpsHandler {
         set(FOD_STATUS_PATH, value);
     }
 
-    void setFingerDown(bool pressed) {
+    /*
+     * Never deduplicate a press: a latched one would swallow every later press
+     * until cancel(). The vendor HAL already drops a second down while queued,
+     * so forwarding costs nothing. Releases stay deduplicated.
+     */
+    void setFingerDown(bool pressed, PressSource source = PressSource::Node) {
         std::lock_guard<std::mutex> lock(mFingerDownMutex);
-        if (mFingerDown == pressed) {
-            return;
+        if (pressed) {
+            mFingerDown = true;
+            mFrameworkPress = source == PressSource::Framework;
+            mNodePressed = source == PressSource::Node;
+        } else {
+            if (!mFingerDown) {
+                return;
+            }
+            mFingerDown = false;
+            mFrameworkPress = false;
+            mNodePressed = false;
         }
-        mFingerDown = pressed;
 
         mDevice->extCmd(mDevice, COMMAND_FOD_PRESS_STATUS,
                         pressed ? PARAM_FOD_PRESSED : PARAM_FOD_RELEASED);
