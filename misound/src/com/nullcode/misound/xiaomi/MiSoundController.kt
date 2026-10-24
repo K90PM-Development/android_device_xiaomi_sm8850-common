@@ -20,20 +20,14 @@ import android.util.Log
 import androidx.preference.PreferenceManager
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.DEFAULT_3D_SURROUND
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.DEFAULT_ENABLED
-import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.DEFAULT_EQ_COMPENSATION
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.DEFAULT_MODE
-import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.DEFAULT_SOUND_ID
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.EFFECT_PRIORITY
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.MISOUND_PARAM_3DSURROUND
-import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.MISOUND_PARAM_EQ_COMPENSATION_ENABLE
-import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.MISOUND_PARAM_SOUNDID_ENABLE
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.MODE_OFF
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.MODE_SETTING_KEY
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.PREF_ENABLE
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY_3D_SURROUND
-import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY_EQ_COMPENSATION
-import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY_SOUND_ID
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.dlog
 
 /**
@@ -59,15 +53,11 @@ internal class MiSoundController private constructor(
     @Volatile
     private var currentMode: Int = DEFAULT_MODE
 
-    // Most recent value (0/1) of each new MiSound toggle. Pushed to the
-    // vendor AIDL effect on every profile apply via MISOUND_PARAM_* ids
+    // Most recent value (0/1) of the 3D surround toggle. Pushed to the
+    // vendor AIDL effect on every profile apply via the MISOUND_PARAM_* id
     // decoded from libmisoundfx_aosp_aidl_ext.so (see MiSoundConstants).
     @Volatile
     private var current3dSurround: Int = DEFAULT_3D_SURROUND
-    @Volatile
-    private var currentSoundId: Int = DEFAULT_SOUND_ID
-    @Volatile
-    private var currentEqCompensation: Int = DEFAULT_EQ_COMPENSATION
 
     // Re-apply the surround profile on every media session.
     private val playbackCallback = object : AudioPlaybackCallback() {
@@ -122,20 +112,16 @@ internal class MiSoundController private constructor(
         val enabled = readEnabled()
         val mode = readMode()
         current3dSurround = readToggle(SETTING_KEY_3D_SURROUND, DEFAULT_3D_SURROUND)
-        currentSoundId = readToggle(SETTING_KEY_SOUND_ID, DEFAULT_SOUND_ID)
-        currentEqCompensation = readToggle(SETTING_KEY_EQ_COMPENSATION, DEFAULT_EQ_COMPENSATION)
         dlog(
             TAG,
-            "onBootCompleted: enabled=$enabled, mode=$mode, " +
-                "3d=$current3dSurround, soundId=$currentSoundId, " +
-                "eqComp=$currentEqCompensation",
+            "onBootCompleted: enabled=$enabled, mode=$mode, 3d=$current3dSurround",
         )
         applyState(enabled, mode)
     }
 
     /**
      * Registers [ContentObserver]s for the master on/off key, the mode key,
-     * and the three sub-toggle keys so the controller reacts to runtime changes
+     * and the 3D surround toggle key so the controller reacts to runtime changes
      * (e.g. from the XiaomiParts sub-page or `adb shell settings put system
      * ...`). Safe to call multiple times — observers are only registered once
      * per process.
@@ -146,8 +132,6 @@ internal class MiSoundController private constructor(
             override fun onChange(selfChange: Boolean) {
                 dlog(TAG, "settings observer: onChange")
                 current3dSurround = readToggle(SETTING_KEY_3D_SURROUND, DEFAULT_3D_SURROUND)
-                currentSoundId = readToggle(SETTING_KEY_SOUND_ID, DEFAULT_SOUND_ID)
-                currentEqCompensation = readToggle(SETTING_KEY_EQ_COMPENSATION, DEFAULT_EQ_COMPENSATION)
                 applyState(readEnabled(), readMode())
             }
         }
@@ -165,18 +149,6 @@ internal class MiSoundController private constructor(
         )
         context.contentResolver.registerContentObserver(
             Settings.System.getUriFor(SETTING_KEY_3D_SURROUND),
-            false,
-            observer,
-            UserHandle.USER_CURRENT,
-        )
-        context.contentResolver.registerContentObserver(
-            Settings.System.getUriFor(SETTING_KEY_SOUND_ID),
-            false,
-            observer,
-            UserHandle.USER_CURRENT,
-        )
-        context.contentResolver.registerContentObserver(
-            Settings.System.getUriFor(SETTING_KEY_EQ_COMPENSATION),
             false,
             observer,
             UserHandle.USER_CURRENT,
@@ -285,12 +257,9 @@ internal class MiSoundController private constructor(
             // Don't let a transient audio HAL hiccup crash the boot receiver.
             Log.e(TAG, "applyCurrentProfile failed", t)
         }
-        // Push the three sub-toggles. Each is wrapped separately so a missing
-        // param id on a future vendor blob doesn't tear down the rest of the
-        // pipeline (e.g. if Xiaomi renumbers param 24 in a later build).
+        // Push the 3D surround toggle. Wrapped so a missing param id on a
+        // future vendor blob doesn't tear down the rest of the pipeline.
         applySubToggle(MISOUND_PARAM_3DSURROUND, current3dSurround, "3dSurround")
-        applySubToggle(MISOUND_PARAM_SOUNDID_ENABLE, currentSoundId, "soundId")
-        applySubToggle(MISOUND_PARAM_EQ_COMPENSATION_ENABLE, currentEqCompensation, "eqCompensation")
     }
 
     private fun applySubToggle(param: Int, value: Int, label: String) {

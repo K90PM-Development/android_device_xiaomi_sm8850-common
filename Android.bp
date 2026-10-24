@@ -49,6 +49,19 @@ cc_prebuilt_library_shared {
     check_elf_files: false,
 }
 
+cc_prebuilt_library_shared {
+    name: "libearpiecebass_aidl",
+    owner: "EarpieceEQ",
+    vendor: true,
+    relative_install_path: "soundfx",
+    srcs: ["prebuilt/lib64/soundfx/libearpiecebass_aidl.so"],
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    check_elf_files: false,
+}
+
 android_app_import {
     name: "ViPER4Android",
     apk: "prebuilt/app/ViPER4Android/ViPER4Android.apk",

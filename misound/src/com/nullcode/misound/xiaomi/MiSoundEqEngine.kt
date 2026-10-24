@@ -57,10 +57,13 @@ internal object MiSoundEqEngine {
      * Maps logical speaker (0 = earpiece, 1 = bottom) to physical channel.
      * Portrait/90° is 0 -> L, 1 -> R; 180°/270° swap L/R from the screen's
      * point of view, so the mapping flips to keep the earpiece the earpiece.
+     *
+     * While an external output is routed, the channels are an ordinary
+     * stereo pair that does not follow the screen, so L/R stay fixed.
      */
     fun physicalChannel(context: Context?, s: EqSettings, base: Int = 0): Int {
         val b = if (base == 0) 0 else 1
-        if (!s.autoRotate) return b
+        if (s.profileId.isNotEmpty() || !s.autoRotate) return b
         val rotation = try {
             (context ?: appContext)?.getSystemService(DisplayManager::class.java)
                 ?.getDisplay(Display.DEFAULT_DISPLAY)?.rotation ?: Surface.ROTATION_0

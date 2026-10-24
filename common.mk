@@ -79,6 +79,7 @@ PRODUCT_PACKAGES += \
     libbundleaidl \
     libdownmixaidl \
     libdynamicsprocessingaidl \
+    libearpiecebass_aidl \
     libloudnessenhanceraidl \
     libreverbaidl \
     libv4a_aidl \

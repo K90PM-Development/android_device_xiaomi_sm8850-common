@@ -28,6 +28,8 @@ import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY_EQ_ENA
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY_EQ_INITIALIZED
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY_EQ_PREAMP
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY_EQ_PREAMP_BOTTOM
+import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY_EQ_PROFILES
+import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.SETTING_KEY_EQ_ROUTE_ACTIVE
 import com.nullcode.misound.xiaomi.MiSoundConstants.Companion.dlog
 import org.json.JSONObject
 
@@ -38,10 +40,13 @@ import org.json.JSONObject
  *    (same format the standalone EarpieceEQ app exports) into
  *    Settings.System so the out-of-the-box tuning matches the backup config
  *    the user validated with the standalone app;
- *  - watches for connected external outputs (headphones/USB/BT) and
- *    suspends/resumes the EQ accordingly;
+ *  - watches the routed media output and switches to that device's own
+ *    profile, pausing processing for unidentified or paused external
+ *    outputs (ported from EarpieceEQ v0.21);
  *  - watches display rotation and re-maps earpiece/bottom speaker to
- *    physical L/R on the fly;
+ *    physical L/R on the fly (built-in speakers only);
+ *  - drives the EarpieceEQ companion AIDL effect directly with the active
+ *    profile's virtual bass / ceiling / common EQ values;
  *  - observes the misound_eq_* Settings.System keys so changes made from the
  *    XiaomiParts sub-page (or adb) apply live.
  */
@@ -54,6 +59,9 @@ internal class MiSoundEqController private constructor(private val context: Cont
     private var playbackCallback: AudioManager.AudioPlaybackCallback? = null
     private var registered = false
     private var lastPhys = -1
+    private var lastProfile: String? = null
+
+    private val bassEffect = EarpieceBassEffect()
 
     init {
         MiSoundEqEngine.init(context)
@@ -63,23 +71,69 @@ internal class MiSoundEqController private constructor(private val context: Cont
         importDefaultsIfNeeded()
         registerCallbacks()
         evaluateOutput()
-        applyEq()
     }
 
     fun release() {
         unregisterCallbacks()
         MiSoundEqEngine.release()
+        bassEffect.release()
     }
 
-    /** Re-reads settings and pushes them to the engine. */
+    /** Re-reads settings and pushes them to the engine for the active profile. */
     private fun applyEq() {
-        val s = EqSettings(context.contentResolver)
+        val resolver = context.contentResolver
+        val s = EqSettings.active(resolver)
         dlog(
             TAG,
-            "applyEq: enabled=${s.enabled} ear=${s.applyEarpiece} " +
-                "bottom=${s.applyBottom} suspended=${MiSoundEqEngine.suspended}",
+            "applyEq: profile=${s.profileId.ifEmpty { "builtin" }} enabled=${s.enabled} " +
+                "ear=${s.applyEarpiece} bottom=${s.applyBottom} " +
+                "suspended=${MiSoundEqEngine.suspended}",
         )
+        // Order matters: AudioFlinger inserts a new EFFECT_FLAG_INSERT_LAST
+        // effect *before* an existing one, so whichever is created last
+        // processes first. Creating the bass stage before DynamicsProcessing
+        // makes the chain EQ -> bass -> ceiling, so the EQ shapes the signal
+        // instead of boosting it after the ceiling has already limited it.
+        applyBass(s)
+        // A freshly attached bass effect jumps ahead of the existing pre-EQ in
+        // the chain, so rebuild DynamicsProcessing afterwards to restore the
+        // EQ -> bass order.
+        if (bassEffect.consumeReopened()) {
+            MiSoundEqEngine.release()
+        }
         MiSoundEqEngine.apply(s)
+    }
+
+    /**
+     * Pushes the virtual bass / common EQ stages of the active profile to the
+     * EarpieceEQ companion effect, or releases it when nothing is configured.
+     *
+     * Must run before [MiSoundEqEngine.apply] when both effects are being
+     * created, so that the pre-EQ ends up earlier in the effect chain; see
+     * the call site for the insertion-order rule.
+     */
+    private fun applyBass(s: EqSettings) {
+        val b = BassSettings(context.contentResolver, s.profileId)
+        val active = s.enabled && !MiSoundEqEngine.suspended &&
+            (b.anyBass() || b.commonEqEnabled)
+        if (!active) {
+            bassEffect.release()
+            return
+        }
+        if (!EarpieceBassEffect.available()) {
+            dlog(TAG, "earpiece bass effect not registered, skipping")
+            return
+        }
+        val earPhys = MiSoundEqEngine.physicalChannel(context, s, 0)
+        // Unconditional: with no bass configured the block is the neutral
+        // default, which is exactly how a previously active bass stage is
+        // switched off while the common EQ keeps the effect running.
+        bassEffect.apply(
+            b.buildControls(earPhys, 1 - earPhys, s.applyEarpiece, s.applyBottom),
+        )
+        // Always sent so that turning the common EQ off reaches the DSP; the
+        // driver skips the call when the values are unchanged.
+        bassEffect.applyCommonEq(b.commonEqEnabled, b.commonPreamp, b.commonGains)
     }
 
     private fun registerCallbacks() {
@@ -114,7 +168,10 @@ internal class MiSoundEqController private constructor(private val context: Cont
         val playCb = object : AudioManager.AudioPlaybackCallback() {
             override fun onPlaybackConfigChanged(configs: List<AudioPlaybackConfiguration>) {
                 if (configs.any { it.playerState == AudioPlaybackConfiguration.PLAYER_STATE_STARTED }) {
-                    applyEq()
+                    // Re-detect the route too: the routed output can change
+                    // (e.g. an explicit routing request) without any device
+                    // being added or removed.
+                    evaluateOutput()
                 }
             }
         }
@@ -125,17 +182,18 @@ internal class MiSoundEqController private constructor(private val context: Cont
             override fun onDisplayAdded(displayId: Int) {}
             override fun onDisplayRemoved(displayId: Int) {}
             override fun onDisplayChanged(displayId: Int) {
-                val phys = MiSoundEqEngine.physicalChannel(context, EqSettings(resolver), 0)
+                val s = EqSettings.active(resolver)
+                val phys = MiSoundEqEngine.physicalChannel(context, s, 0)
                 if (phys == lastPhys) return
                 lastPhys = phys
                 dlog(TAG, "rotation -> physical earpiece ch=$phys, refreshing EQ")
-                MiSoundEqEngine.refresh(EqSettings(resolver))
+                MiSoundEqEngine.refresh(s)
             }
         }
         context.getSystemService(DisplayManager::class.java)?.registerDisplayListener(listener, handler)
         displayListener = listener
 
-        lastPhys = MiSoundEqEngine.physicalChannel(context, EqSettings(resolver), 0)
+        lastPhys = MiSoundEqEngine.physicalChannel(context, EqSettings.active(resolver), 0)
         registered = true
         dlog(TAG, "callbacks registered")
     }
@@ -159,18 +217,30 @@ internal class MiSoundEqController private constructor(private val context: Cont
         registered = false
     }
 
-    /** External outputs currently connected (headphones, USB, BT ...). */
-    private fun externalOutputs(): List<AudioDeviceInfo> =
-        audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-            .filter { it.type in EXTERNAL_TYPES }
-
+    /**
+     * Re-detects the routed output, switches to that device's profile and
+     * pauses processing when required.
+     *
+     * Processing runs only when the output could be identified and, for an
+     * external output, when "pause processing for earphones" is off. On any
+     * profile change the effect is torn down first: the new device may be
+     * stereo where the last one was not, and a stale instance would keep the
+     * previous channels.
+     */
     private fun evaluateOutput() {
-        val s = EqSettings(context.contentResolver)
-        val suspend = s.autoSuspend && externalOutputs().isNotEmpty()
-        if (suspend != MiSoundEqEngine.suspended) {
-            dlog(TAG, "external output -> suspend=$suspend")
-            MiSoundEqEngine.setSuspended(suspend)
+        val resolver = context.contentResolver
+        RouteProfiles.update(context)
+        val profile = RouteProfiles.currentId(resolver)
+        val suspend = !RouteProfiles.processingAllowed(resolver)
+        if (profile == lastProfile && suspend == MiSoundEqEngine.suspended) {
+            applyEq()
+            return
         }
+        lastProfile = profile
+        MiSoundEqEngine.setSuspended(suspend)
+        dlog(TAG, "output profile -> ${RouteProfiles.label(context)} suspend=$suspend")
+        MiSoundEqEngine.release()
+        bassEffect.release()
         applyEq()
     }
 
@@ -237,26 +307,14 @@ internal class MiSoundEqController private constructor(private val context: Cont
     companion object {
         private const val TAG = "MiSoundEqController"
 
-        private val EXTERNAL_TYPES = setOf(
-            AudioDeviceInfo.TYPE_WIRED_HEADSET,
-            AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
-            AudioDeviceInfo.TYPE_LINE_ANALOG,
-            AudioDeviceInfo.TYPE_USB_DEVICE,
-            AudioDeviceInfo.TYPE_USB_HEADSET,
-            AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
-            AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
-            AudioDeviceInfo.TYPE_HEARING_AID,
-            AudioDeviceInfo.TYPE_BLE_HEADSET,
-            AudioDeviceInfo.TYPE_BLE_SPEAKER,
-            AudioDeviceInfo.TYPE_BLE_BROADCAST,
-        )
-
-        // Gains keys are name-patterned (misound_eq_gains_<n>) so they cannot
-        // be observed individually; setProfile() rewrites the preamp and
-        // band-count keys on every profile write, which triggers this
+        // Gains and per-device profiles are name-patterned / JSON blobs, so
+        // they cannot be observed individually. Every write through
+        // EqSettings.setProfile() also rewrites the preamp and band-count keys
+        // and every route switch rewrites the route keys, which trigger this
         // observer anyway.
         private val OBSERVED_KEYS = arrayOf(
             SETTING_KEY_EQ_ENABLED,
+            *BassSettings.globalKeys().toTypedArray(),
             SETTING_KEY_EQ_APPLY_EAR,
             SETTING_KEY_EQ_APPLY_BOTTOM,
             SETTING_KEY_EQ_AUTO_ROTATE,
@@ -265,6 +323,9 @@ internal class MiSoundEqController private constructor(private val context: Cont
             SETTING_KEY_EQ_BAND_COUNT,
             SETTING_KEY_EQ_PREAMP_BOTTOM,
             SETTING_KEY_EQ_BAND_COUNT_BOTTOM,
+            // Route switches (and every per-device profile write) land here.
+            SETTING_KEY_EQ_ROUTE_ACTIVE,
+            SETTING_KEY_EQ_PROFILES,
         )
 
         @Volatile

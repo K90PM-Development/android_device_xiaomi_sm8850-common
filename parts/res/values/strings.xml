@@ -23,10 +23,6 @@
     <string name="misound_mode_standard">Standard</string>
     <string name="misound_3d_surround_title">3D Surround</string>
     <string name="misound_3d_surround_summary">Enable 3D surround processing for stereo sources</string>
-    <string name="misound_sound_id_title">SoundID HRTF</string>
-    <string name="misound_sound_id_summary">Enable SoundID head-related transfer function</string>
-    <string name="misound_eq_compensation_title">Equalizer Tune</string>
-    <string name="misound_eq_compensation_summary">Enable personalised ear-response EQ</string>
 
     <!-- Earpiece EQ (DynamicsProcessing pre-EQ on the speaker channels) -->
     <string name="eq_category_title">Earpiece EQ</string>
@@ -55,4 +51,30 @@
     <string name="eq_reset_summary">Set every band of this profile back to 0 dB</string>
     <string name="eq_reset_earpiece_title">Reset earpiece profile</string>
     <string name="eq_reset_bottom_title">Reset bottom speaker profile</string>
+
+    <!-- Earpiece virtual bass (companion AIDL effect) -->
+    <string name="bass_edit_earpiece">Virtual bass: earpiece</string>
+    <string name="bass_edit_bottom">Virtual bass: bottom speaker</string>
+    <string name="bass_strength_title">Strength</string>
+    <string name="bass_body_title">Body</string>
+    <string name="bass_limiter_title">Ceiling limiter</string>
+    <string name="bass_ceiling_title">Ceiling</string>
+    <string name="bass_limiter_on">limiter on</string>
+    <string name="bass_limiter_off">limiter off</string>
+    <string name="bass_bands_message">%1$d%% strength, %2$d%% body, %3$s</string>
+
+    <!-- Per-output-device profiles (EarpieceEQ v0.21 route system) -->
+    <string name="eq_output_title">Current output</string>
+    <string name="eq_output_clear_title">Forget this output\'s profile</string>
+    <string name="eq_output_clear_summary">Delete the saved EQ for the connected device</string>
+    <string name="eq_output_clear_message">Delete the saved profile for this output? The next connection starts from a flat, disabled profile.</string>
+    <string name="eq_output_clear_ok">Delete</string>
+    <string name="eq_output_cleared">Profile deleted</string>
+    <string name="eq_route_builtin">Built-in speakers</string>
+    <string name="eq_route_external">External output</string>
+    <string name="eq_route_unknown">Output could not be identified</string>
+    <string name="eq_route_unknown_hint">Android did not report a single media output, so processing and editing are paused. Pick one output in the system media controls.</string>
+    <string name="eq_route_paused_hint">Processing is paused for external outputs. Switch back to the built-in speakers and turn off \"Off while using headphones\" to use per-device settings.</string>
+    <string name="eq_route_active_hint">Changes are saved for this device only. Left/right stay fixed when the screen rotates. New devices start with processing off and a flat profile.</string>
+    <string name="eq_route_weak_hint">This device has no unique address, so it is identified by type and name. Identically named devices and passive wired headphones may share one profile.</string>
 </resources>

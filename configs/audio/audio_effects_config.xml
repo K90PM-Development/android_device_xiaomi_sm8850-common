@@ -29,6 +29,7 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
         <library name="gamedap" path="libswgamedapaidl.so"/>
         <library name="miwns_processing" path="libmiwndnsprocessingaidl.so"/>
         <library name="v4a_aidl" path="libv4a_aidl.so"/>
+        <library name="earpiece_virtual_bass" path="libearpiecebass_aidl.so"/>
     </libraries>
 
     <effects>
@@ -92,6 +93,7 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
         <effect name="gamedap" library="gamedap" uuid="3783c334-d3a0-4d13-874f-0032e5fb80e2"/>
         <!--DOLBY END-->
         <effect name="miwns" library="miwns_processing" uuid="7e384a3b-7850-4a64-a097-884250d8a837"/>
+        <effect name="earpiece_virtual_bass" library="earpiece_virtual_bass" uuid="39bc18a1-73e0-4a2b-91d2-3e47b8502c10" type="29bc18a1-73e0-4a2b-91d2-3e47b8502c10"/>
     </effects>
 
     <postprocess>

@@ -27,19 +27,17 @@
         android:summary="@string/misound_3d_surround_summary"
         android:defaultValue="false" />
 
-    <SwitchPreferenceCompat
-        android:key="misound_sound_id"
-        android:title="@string/misound_sound_id_title"
-        android:summary="@string/misound_sound_id_summary"
-        android:defaultValue="false" />
-
-    <SwitchPreferenceCompat
-        android:key="misound_eq_compensation"
-        android:title="@string/misound_eq_compensation_title"
-        android:summary="@string/misound_eq_compensation_summary"
-        android:defaultValue="false" />
-
     <PreferenceCategory android:title="@string/eq_category_title">
+
+        <Preference
+            android:key="misound_eq_output"
+            android:title="@string/eq_output_title"
+            android:selectable="false" />
+
+        <Preference
+            android:key="misound_eq_forget_output"
+            android:title="@string/eq_output_clear_title"
+            android:summary="@string/eq_output_clear_summary" />
 
         <SwitchPreferenceCompat
             android:key="misound_eq_enabled"
@@ -66,6 +64,14 @@
         <Preference
             android:key="misound_eq_edit_bottom"
             android:title="@string/eq_edit_bottom" />
+
+        <Preference
+            android:key="misound_bass_edit_earpiece"
+            android:title="@string/bass_edit_earpiece" />
+
+        <Preference
+            android:key="misound_bass_edit_bottom"
+            android:title="@string/bass_edit_bottom" />
 
         <SwitchPreferenceCompat
             android:key="misound_eq_auto_rotate"

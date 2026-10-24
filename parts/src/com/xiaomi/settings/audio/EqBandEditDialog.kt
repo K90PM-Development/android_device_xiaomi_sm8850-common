@@ -48,7 +48,6 @@ class EqBandEditDialog : DialogFragment() {
     }
 
     private var listener: Listener? = null
-    private var preampOut = 0f
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -69,6 +68,9 @@ class EqBandEditDialog : DialogFragment() {
         val context = requireContext()
         val pad = (16 * resources.displayMetrics.density).roundToInt()
 
+        // Seeded with the profile's current preamp so pressing OK without
+        // touching that slider keeps it instead of overwriting it with 0 dB.
+        var preampOut = preamp
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(pad, pad, pad, 0)

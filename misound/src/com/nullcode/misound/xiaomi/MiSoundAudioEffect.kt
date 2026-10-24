@@ -60,9 +60,9 @@ class MiSoundAudioEffect(priority: Int, audioSession: Int) : AudioEffect(
     }
 
     /**
-     * Convenience wrapper that writes a boolean as 0/1 to [param]. All of the
-     * MiSound toggles (3D surround, SoundID, EQ compensation, master effect
-     * enable) use this 0/1 convention on the vendor side.
+     * Convenience wrapper that writes a boolean as 0/1 to [param]. The
+     * MiSound toggles (3D surround, master effect enable) use this 0/1
+     * convention on the vendor side.
      */
     fun setBooleanParam(param: Int, enabled: Boolean) {
         setIntParam(param, if (enabled) 1 else 0)

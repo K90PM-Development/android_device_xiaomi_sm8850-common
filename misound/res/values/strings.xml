@@ -5,4 +5,13 @@
 -->
 <resources>
     <string name="misound_title">MiSound</string>
+
+    <!-- Per-output-device profiles (EarpieceEQ v0.21 route system) -->
+    <string name="eq_route_builtin">Built-in speakers</string>
+    <string name="eq_route_external">External output</string>
+    <string name="eq_route_unknown">Output could not be identified</string>
+    <string name="eq_route_unknown_hint">Android did not report a single media output, so processing and editing are paused. Pick one output in the system media controls.</string>
+    <string name="eq_route_paused_hint">Processing is paused for external outputs. Switch back to the built-in speakers and turn off \"Off while using headphones\" to use per-device settings.</string>
+    <string name="eq_route_active_hint">Changes are saved for this device only. Left/right stay fixed when the screen rotates. New devices start with processing off and a flat profile.</string>
+    <string name="eq_route_weak_hint">This device has no unique address, so it is identified by type and name. Identically named devices and passive wired headphones may share one profile.</string>
 </resources>

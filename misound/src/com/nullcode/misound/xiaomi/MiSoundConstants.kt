@@ -27,9 +27,7 @@ class MiSoundConstants {
         // table lives in EffectMiSoundContext::setParams(vector<uint8_t>) at
         // VA 0x5d8b4. Ids 3-8, 10, 12, 16-19, 21-22 are explicitly rejected
         // by the library ("unsupport parameters!") and are not listed here.
-        const val MISOUND_PARAM_EQ_COMPENSATION_ENABLE = 9   // ears EQ on/off
         const val MISOUND_PARAM_3DSURROUND = 20              // 3D surround
-        const val MISOUND_PARAM_SOUNDID_ENABLE = 24          // SoundID HRTF
         const val MISOUND_PARAM_EFFECT_ENABLE = 25           // master on/off
         const val MISOUND_PARAM_SUPER_EFFECT_PROFILE = 31    // 0/1/2 off/intelligent/standard
 
@@ -65,19 +63,15 @@ class MiSoundConstants {
         const val MODE_INTELLIGENT = 1
         const val MODE_STANDARD = 2
 
-        // Settings.System keys for the three new MiSound toggles exposed in
-        // the XiaomiParts sub-page. Each stores 0 (off) or 1 (on) and is
-        // written via Settings.System.putIntForUser(..., UserHandle.USER_CURRENT).
-        // The corresponding vendor param id is named next to each key.
+        // Settings.System key for the 3D surround toggle exposed in the
+        // XiaomiParts sub-page. Stores 0 (off) or 1 (on) and is written via
+        // Settings.System.putIntForUser(..., UserHandle.USER_CURRENT). The
+        // corresponding vendor param id is named next to the key.
         const val SETTING_KEY_3D_SURROUND = "misound_3d_surround"          // param 20
-        const val SETTING_KEY_SOUND_ID = "misound_sound_id"                // param 24
-        const val SETTING_KEY_EQ_COMPENSATION = "misound_eq_compensation"  // param 9
 
-        // Default values for the three new toggles. 0 = off so a user who
-        // has never opened the sub-page gets the stock MiSound behaviour.
+        // Default value for the toggle. 0 = off so a user who has never
+        // opened the sub-page gets the stock MiSound behaviour.
         const val DEFAULT_3D_SURROUND = 0
-        const val DEFAULT_SOUND_ID = 0
-        const val DEFAULT_EQ_COMPENSATION = 0
 
         // ---- Earpiece EQ (DynamicsProcessing pre-EQ, ported from the
         // EarpieceEQ app in device/xiaomi/earpiece-eq-v0.12-source). ----
@@ -113,6 +107,62 @@ class MiSoundConstants {
         // JSON has been written into the keys above, so the user's own edits
         // are never overwritten on later boots.
         const val SETTING_KEY_EQ_INITIALIZED = "misound_eq_initialized"
+
+        // ---- Per-output-device profiles (ported from EarpieceEQ v0.21) ----
+        //
+        // The keys above describe the built-in speaker profile. Each external
+        // output gets its own copy of the same keys inside the JSON blob under
+        // SETTING_KEY_EQ_PROFILES, keyed by the route identity (SHA-256).
+        const val SETTING_KEY_EQ_PROFILES = "misound_eq_profiles"
+        const val SETTING_KEY_EQ_ROUTE_ACTIVE = "misound_eq_route_active"
+        const val SETTING_KEY_EQ_ROUTE_EXTERNAL = "misound_eq_route_external"
+        const val SETTING_KEY_EQ_ROUTE_KNOWN = "misound_eq_route_known"
+        const val SETTING_KEY_EQ_ROUTE_NAME = "misound_eq_route_name"
+        const val SETTING_KEY_EQ_ROUTE_WEAK = "misound_eq_route_weak"
+
+        // ---- Earpiece virtual bass AIDL effect (libearpiecebass_aidl.so) ----
+        //
+        // Prebuilt blob from the EarpieceEQ companion module, registered in
+        // configs/audio/audio_effects_config.xml. It is driven directly from
+        // this app (platform_apis) through the hidden AudioEffect
+        // setParameter/getParameter(byte[], byte[]) overloads, so neither the
+        // upstream root daemon nor any Magisk module is needed.
+        val EFFECT_TYPE_EARPIECE_BASS =
+            java.util.UUID.fromString("29bc18a1-73e0-4a2b-91d2-3e47b8502c10")
+        val EFFECT_UUID_EARPIECE_BASS =
+            java.util.UUID.fromString("39bc18a1-73e0-4a2b-91d2-3e47b8502c10")
+
+        // Param ids understood by EarpieceBass.cpp::setParameterSpecific. The
+        // payload is a little-endian int32 array laid out as
+        // [0, 4, vsize_bytes, param_id, ...values], which is exactly what the
+        // legacy effect_param_t looks like after the AIDL conversion copies it
+        // into DefaultExtension.bytes.
+        const val EB_PARAM_VIRTUAL_BASS = 1000        // 2 values  (L/R strength %)
+        const val EB_PARAM_BODY = 1001                // 4 values  (+body %)
+        const val EB_PARAM_LIMITED = 1003             // 8 values  (+limiter + ceiling)
+        const val EB_PARAM_ADVANCED = 1005            // 22 values (+band/auto/meters)
+
+        // Readback keys, answered with [0, 4, size, key, driverVersion, ...].
+        // The reply's value region starts with the driver version, so the
+        // first int the app reads back is that version, not the status.
+        const val EB_PARAM_READBACK_VB = 1002         // 32 B: strengths + body
+        const val EB_PARAM_READBACK_LIMITED = 1004    // 64 B: + limiter/ceiling
+        const val EB_PARAM_READBACK_ADVANCED = 1006   // 140 B: + all 22 controls
+        const val EB_PARAM_READBACK_COMMON_EQ = 1008  // 144 B
+        const val EB_PARAM_READBACK_COMMON_BASS = 1010 // 144 B
+
+        // Additional stacked stages (independent of the virtual bass profile).
+        const val EB_PARAM_COMMON_EQ = 1007           // 3+n values
+        const val EB_PARAM_COMMON_BASS = 1009         // 23 values
+
+        const val EB_PARAM_ADVANCED_FX = 1100         // 1 + 3*101 values
+        const val EB_PARAM_ADVANCED_FX_READBACK = 1101
+        const val EB_PARAM_LEVELER = 1200             // 3*9 values
+        const val EB_PARAM_LEVELER_READBACK = 1201
+
+        // Driver version reported by every readback; the module this tree
+        // ships understood at least 21 at the time it was imported.
+        const val EB_DRIVER_MIN_VERSION = 21
 
         fun dlog(tag: String, msg: String) {
             if (Log.isLoggable(TAG, Log.DEBUG)) {
