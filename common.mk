@@ -452,7 +452,7 @@ endif
 # ViPER4Android
 PRODUCT_PACKAGES += \
     ViPER4Android
-    
+
 # WiFi
 PRODUCT_PACKAGES += \
     android.hardware.wifi-service \
@@ -475,3 +475,7 @@ PRODUCT_PACKAGES += \
     firmware_wlanmdsp.otaupdate_symlink \
     firmware_wlan_mac.bin_symlink \
     firmware_WCNSS_qcom_cfg.ini_symlink
+
+# XiaomiMiSound
+PRODUCT_PACKAGES += \
+    XiaomiMiSound
