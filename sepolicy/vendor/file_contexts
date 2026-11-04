@@ -1,6 +1,9 @@
 # Audio
 /dev/socket/audio_holder_socket_0 u:object_r:audio_socket:s0
 
+# AVF
+/(odm|vendor/odm)/firmware_oemvm(/.*)?    u:object_r:vendor_vm_file:s0
+
 # Battery
 /(vendor|system/vendor)/bin/batterysecret u:object_r:batterysecret_exec:s0
 
@@ -22,6 +25,9 @@
 /(odm|vendor/odm|vendor|system/vendor)/bin/hw/misensor_camera u:object_r:vendor_hal_misensor_camera_default_exec:s0
 /(vendor|odm)/lib(64)?/libanc_single_bokeh\.so           u:object_r:same_process_hal_file:s0
 /(vendor|odm)/lib(64)?/libmiphone_capture_bokeh\.so      u:object_r:same_process_hal_file:s0
+/(vendor|odm)/lib(64)?/libSNPE\.so                       u:object_r:same_process_hal_file:s0
+/(vendor|odm)/lib(64)?/libSnpeHtpV81Stub\.so             u:object_r:same_process_hal_file:s0
+/(vendor|odm)/lib(64)?/rfsa/adsp/libSnpeHtpV81Skel\.so   u:object_r:same_process_hal_file:s0
 /data/vendor/aon(/.*)? u:object_r:vendor_aon_vendor_data_file:s0
 /dev/camlog u:object_r:camlog_device:s0
 /dev/miev u:object_r:vendor_miev_device:s0
@@ -29,6 +35,7 @@
 /odm/lib(64)?/libmialgo_utils\.so                        u:object_r:same_process_hal_file:s0
 /odm/lib(64)?/libmiocr\.so                               u:object_r:same_process_hal_file:s0
 /odm/lib(64)?/libxmi_slow_motion_mein\.so                u:object_r:same_process_hal_file:s0
+/odm/lib64/libcamxexternalformatutils\.so u:object_r:same_process_hal_file:s0
 /vendor/data/model/seg_quantized\.serialized\.8850\.aimet\.pertensor_512_cls3\.minn    u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/libc\+\+_shared\.so                     u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/libcalculator\.so                       u:object_r:same_process_hal_file:s0
@@ -41,13 +48,10 @@
 /vendor/lib(64)?/libQnnHtpV81Stub\.so                    u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/libQnnSystem\.so                        u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/libSEGModel\.so                         u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libSNPE\.so                             u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/libSnpeHta\.so                          u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/libSnpeHtpPrepare\.so                   u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/libSnpeHtpV81CalculatorStub\.so         u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/libSnpeHtpV81Stub\.so                   u:object_r:same_process_hal_file:s0
 /vendor/lib(64)?/rfsa/adsp/libCalculator_skel\.so        u:object_r:same_process_hal_file:s0
-/vendor/lib(64)?/rfsa/adsp/libSnpeHtpV81Skel\.so         u:object_r:same_process_hal_file:s0
 /vendor/lib/rfsa/adsp/libQnnHtpV81Skel\.so               u:object_r:same_process_hal_file:s0
 
 # CitSensor
@@ -75,6 +79,9 @@
 /dev/xiaomi-fp    u:object_r:vendor_fingerprint_device:s0
 /(vendor|system/vendor)/bin/hw/android\.hardware\.biometrics\.fingerprint-service\.xiaomi              u:object_r:hal_fingerprint_default_exec:s0
 
+# GNSS
+/(odm|vendor/odm)/bin/hw/android\.hardware\.gnss-aidl-service-qti    u:object_r:vendor_hal_gnss_qti_exec:s0
+
 # HypSys
 /vendor/bin/hw/xiaomi\.system\.hypsys\.common-service    u:object_r:hal_hypsys_vendor_exec:s0
 
@@ -86,17 +93,27 @@
 /dev/migt u:object_r:migt_dev:s0
 /sys/module/metis/parameters(/.*)? u:object_r:sysfs_migt:s0
 
-# MFIDOCA
-/(odm|vendor/odm|system/vendor)/bin/fidoca    u:object_r:hal_mfidoca_default_exec:s0
-
 # Micharge
 /(vendor|system/vendor)/bin/hw/vendor.xiaomi.hardware.micharge-service-dummy u:object_r:hal_micharge_default_exec:s0
+/dev/smart_charge_cdev u:object_r:vendor_smart_charge_device:s0
+
+# Miface
+/(odm|vendor/odm)/bin/hw/mifaced                u:object_r:hal_miface_default_exec:s0
+/data/vendor/face(/.*)?                         u:object_r:face_vendor_data_file:s0
+
+# Mitee
+/(odm|vendor/odm)/bin/tee-supplicant            u:object_r:tee_exec:s0
+/data/vendor/mitee(/.*)?                        u:object_r:mitee_data_file:s0
+/dev/tee0                                       u:object_r:mitee_client_device:s0
+/dev/teepriv0                                   u:object_r:mitee_client_device:s0
+/mnt/vendor/persist/mitee/data(/.*)?            u:object_r:mitee_sfs_file:s0
 
 # MliPay
 /(odm|vendor/odm|system/vendor)/bin/mlipayd u:object_r:hal_mlipay_default_exec:s0
 
 # NFC
 /(odm|vendor/odm)/bin/hw/android\.hardware\.nqnfc-service\.nxp               u:object_r:hal_nfc_default_exec:s0
+/(odm|vendor/odm)/bin/hw/android\.hardware\.nfc-service-st                   u:object_r:hal_nfc_default_exec:s0
 
 # Perf
 /sys/kernel/reserve_pool(/.*)? u:object_r:vendor_sysfs_perf:s0
@@ -105,6 +122,7 @@
 /vendor/bin/qrtr-lookup   u:object_r:vendor_qrtr_lookup_exec:s0
 
 # Sensors
+/(vendor|system/vendor)/bin/hw/alsd    u:object_r:alsd_exec:s0
 /(vendor|system/vendor)/bin/hw/android\.hardware\.sensors-service\.xiaomi-multihal     u:object_r:hal_sensors_default_exec:s0
 
 # SLA
@@ -124,9 +142,6 @@
 /sys/devices/virtual/thermal/thermal_message/torch_real_level u:object_r:sys_thermal_torch_real_level:s0
 /sys/devices/virtual/thermal/thermal_message/wifi_limit u:object_r:sys_thermal_wifi_limit:s0
 /sys/powersave(/.*)? u:object_r:sysfs_power_save:s0
-
-# Tidad
-/(odm|vendor/odm|system/vendor)/bin/tidad     u:object_r:hal_tidaservice_default_exec:s0
 
 # Touch
 /(odm|vendor/odm|vendor|system/vendor)/bin/ear_sensor                   u:object_r:touchreport_exec:s0

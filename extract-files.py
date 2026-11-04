@@ -4,7 +4,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+import extract_utils.tools
 from extract_utils.fixups_blob import (
+    BlobFixupCtx,
+    File,
     blob_fixup,
     blob_fixups_user_type,
 )
@@ -17,6 +20,33 @@ from extract_utils.main import (
     ExtractUtils,
     ExtractUtilsModule,
 )
+from extract_utils.tools import (
+    llvm_objdump_path,
+)
+from extract_utils.utils import (
+    run_cmd,
+)
+
+def blob_fixup_miface_weak_nonsecure(
+    ctx: BlobFixupCtx,
+    file: File,
+    file_path: str,
+    *args,
+    **kwargs,
+):
+    # Use the non-secure camera and report WEAK strength
+    patches = [
+        (0x4C100, b'\x5a\x65\x41\x39', b'\xfa\x03\x1f\x2a'),  # mov w26, wzr
+        (0x4C818, b'\x33\x65\x41\x39', b'\xf3\x03\x1f\x2a'),  # mov w19, wzr
+        (0x75EF4, b'\xea\x13\x40\x39', b'\x2a\x00\x80\x52'),  # mov w10, #1
+    ]
+    with open(file_path, 'rb+') as f:
+        content = bytearray(f.read())
+        if all(content[o:o + 4] == old for o, old, _ in patches):
+            for o, _, new in patches:
+                content[o:o + 4] = new
+            f.seek(0)
+            f.write(content)
 
 namespace_imports = [
     'device/xiaomi/sm8850-common',
@@ -38,12 +68,13 @@ lib_fixups: lib_fixups_user_type = {
         'vendor.qti.ImsRtpService-V2-ndk',
         'vendor.qti.diaghal-V1-ndk',
         'vendor.qti.qccsyshal_aidl-V1-ndk',
-        'vendor.qti.qccvndhal_aidl-V1-ndk',
+        'vendor.qti.qccvndhal_aidl-V2-ndk',
     ): lib_fixup_vendor_suffix,
     (
         'libcamxcommonutils',
         'libframemaster',
         'libmialgo',
+        'vendor.xiaomi.hardware.aon.auth-V1-ndk',
     ): lib_fixup_remove,
 }
 
@@ -51,37 +82,19 @@ blob_fixups: blob_fixups_user_type = {
     'system_ext/etc/init/qspa_system.rc': blob_fixup()
         .regex_replace(r'\$\{ro\.boot\.vendor\.qspa:-default\}', 'default'),
     (
-        'vendor/lib64/libVoiceSdk.so',
-        'vendor/lib64/libcapiv2uvvendor.so',
-        'vendor/lib64/liblistensoundmodel2vendor.so',
-    ): blob_fixup()
-        .replace_needed('libtensorflowlite_c.so', 'libtensorflowlite_c_vendor.so'),
-    (
-        'odm/bin/hw/vendor.xiaomi.sensor.citsensorservice.aidl',
         'odm/lib64/hw/displayfeature.default.so',
         'odm/lib64/libmiXmlParser.so',
         'vendor/bin/hw/audiohalservice.qti',
         'vendor/bin/hw/vendor.qti.hardware.display.composer-service',
-        'vendor/bin/poweropt-service',
-        'vendor/bin/poweropt-service',
-        'vendor/bin/qsap_mpamsvc',
         'vendor/lib64/hw/libaudioeffecthal.qti.so',
-        'vendor/lib64/libaodoptfeature.so',
         'vendor/lib64/libaudiocloudctrl.so',
-        'vendor/lib64/libcamerapoweroptfeature.so',
         'vendor/lib64/libdemura_oem_plugin.so',
-        'vendor/lib64/libgamepoweroptfeature.so',
-        'vendor/lib64/liblearningmodule.so',
-        'vendor/lib64/liboffscreenpoweroptfeature.so',
-        'vendor/lib64/libpowercallback.so',
-        'vendor/lib64/libpowercore.so',
-        'vendor/lib64/libpsmoptfeature.so',
-        'vendor/lib64/libsdmclient.so',
-        'vendor/lib64/libstandbyfeature.so',
-        'vendor/lib64/libvideooptfeature.so',
         'vendor/lib64/libxlog.so',
         'vendor/lib64/soundfx/libquasar.so',
     ): blob_fixup()
+        .replace_needed('libtinyxml2.so', 'libtinyxml2-v36.so'),
+    'vendor/lib64/libsdmclient.so': blob_fixup()
+        .patchelf_version('0_9')
         .replace_needed('libtinyxml2.so', 'libtinyxml2-v36.so'),
      (
        'odm/lib64/hw/displayfeature.default.so',
@@ -98,10 +111,11 @@ blob_fixups: blob_fixups_user_type = {
        'odm/lib64/libsre.so',
        'odm/lib64/libtruetone.so',
        'odm/lib64/libvideomode.so',
+       'odm/lib64/libdynamicelvss.so',
      ): blob_fixup()
         .replace_needed('android.hardware.sensors-V2-ndk.so','android.hardware.sensors-V3-ndk.so'),
      (
-       'odm/bin/hw/vendor.xiaomi.sensor.citsensorservice.aidl',
+       'vendor/lib64/libdolbyui.so',
      ): blob_fixup()
         .replace_needed('android.hardware.graphics.common-V6-ndk.so','android.hardware.graphics.common-V7-ndk.so'),
     (
@@ -114,29 +128,17 @@ blob_fixups: blob_fixups_user_type = {
     ): blob_fixup()
         .replace_needed('android.hardware.media.c2-V1-ndk.so', 'android.hardware.media.c2-V2-ndk.so'),
     (
-        'odm/lib64/libmt.so',
-    ): blob_fixup()
-        .replace_needed('libkeymint.so', 'libkeymint-sm8850.so')
-        .replace_needed('libkeymint_remote_prov_support.so', 'libkeymint_remote_prov_support-sm8850.so')
-        .replace_needed('libkeymint_support.so', 'libkeymint_support-sm8850.so'),
-    (
-        'vendor/lib64/libkeymint_remote_prov_support-sm8850.so',
-    ): blob_fixup()
-        .replace_needed('libcppcose_rkp.so', 'libcppcose_rkp-sm8850.so'),
-    (
         'vendor/lib64/libaudioserviceexampleimpl.so',
     ): blob_fixup()
         .add_needed('libaudioutils_shim.so')
         .add_needed('libbluetooth_audio_session_aidl_shim.so'),
-    (
-        'vendor/etc/seccomp_policy/syshealthmon.policy'
-    ): blob_fixup()
-        .add_line_if_missing('lseek: 1'),
     'system_ext/lib64/libwfdmmsrc_system.so': blob_fixup()
         .replace_needed('libaudioclient.so', 'libaudiobase.so'),
     'system_ext/lib64/libwfdservice.so': blob_fixup()
         .add_needed('libaudiobase.so')
         .replace_needed('android.media.audio.common.types-V4-cpp.so', 'android.media.audio.common.types-V5-cpp.so'),
+    'odm/lib64/libmiface.so': blob_fixup()
+        .call(blob_fixup_miface_weak_nonsecure),
 }  # fmt: skip
 
 module = ExtractUtilsModule(

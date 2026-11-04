@@ -26,3 +26,4 @@ bluetooth.profile.pan.nap.enabled=true
 bluetooth.profile.pan.panu.enabled=true
 bluetooth.profile.pbap.server.enabled=true
 bluetooth.profile.bas.client.enabled=true
+persist.vendor.service.bt.adv_transport=true

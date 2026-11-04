@@ -90,6 +90,9 @@ sys.displayfeature.entry.enable=true
 # DRM
 vendor.wv.oemcrypto.debug.enable_prov40=true
 
+# Fingerprint
+persist.vendor.fingerprint.type=udfps
+
 # FW Detect
 ro.vendor.qti.va_odm.support=1
 

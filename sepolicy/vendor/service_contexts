@@ -5,7 +5,6 @@ vendor.xiaomi.hardware.aon.IAlwaysOn/miaonservicehal           u:object_r:hal_ca
 vendor.xiaomi.hardware.camera.injection.ICameraInjectionService/default         u:object_r:hal_dynamic_camera_service:s0
 vendor.xiaomi.hardware.camera.mivimessage.IService/default    u:object_r:hal_mivimessage_service:s0
 vendor.xiaomi.hardware.camera.synthetic.IVirtualCameraRegistrar/default         u:object_r:hal_dynamic_camera_service:s0
-vendor.xiaomi.hardware.misys.common.IMiSysImpl/default    u:object_r:hal_misys_service:s0
 vendor.xiaomi.hardware.postprocservice.IPostProcService/default           u:object_r:hal_postprocservice_service:s0
 vendor.xiaomi.hardware.quickcamera.IQuickCameraService/default u:object_r:hal_quickcamera_service:s0
 vendor.xiaomi.sensor.camera.IMiCam/default  u:object_r:vendor_hal_misensor_camera_service:s0
@@ -22,12 +21,13 @@ android.hardware.media.c2.IComponentStore/default9                   u:object_r:
 vendor.dolby.dms.IDms/default    u:object_r:hal_aidl_dms_service:s0
 vendor.dolby.dvs.IDvs/default u:object_r:dvs_aidl_service:s0
 
+# Face
+vendor.xiaomi.hardware.aek.IAEKService/default               u:object_r:hal_miface_service:s0
+vendor.xiaomi.hardware.aon.IAlwaysOn/miaonservicebymiface    u:object_r:hal_miface_service:s0
+vendor.xiaomi.hardware.aon.auth.IAONAuth/default             u:object_r:hal_miface_service:s0
+
 # Fingerprint
 vendor.xiaomi.hardware.fx.tunnel.IMiFxTunnel/default                    u:object_r:vendor_hal_fingerprint_service_xiaomi:s0
-
-# FIDOCA
-vendor.xiaomi.hardware.mfidoca.IFidoService/default    u:object_r:hal_mfidoca_service:s0
-vendor.xiaomi.hardware.aidl.tidaservice.ITidaService/default    u:object_r:hal_tidaservice_service:s0
 
 # FrameMaster
 vendor.xiaomi.hardware.framemaster.IFrameMaster/default          u:object_r:vendor_hal_framemaster_xiaomi_service:s0

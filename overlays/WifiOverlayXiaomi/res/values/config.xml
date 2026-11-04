@@ -6,28 +6,163 @@
          is no longer indicative, and a separate config now exists for each band -->
     <bool translatable="false" name="config_wifi5ghzSupport">true</bool>
 
+    <!-- boolean indicating whether the WiFi chipset has 6GHz band support -->
+    <bool name="config_wifi6ghzSupport">true</bool>
+
+    <!-- Boolean indicating whether the wifi chipset supports background scanning mechanism.
+         This mechanism allows the host to remain in suspend state and the dongle to actively
+         scan and wake the host when a configured SSID is detected by the dongle. This chipset
+         capability can provide power savings when wifi needs to be always kept on. -->
+    <bool name="config_wifi_background_scan_support">true</bool>
+
+    <!-- Integer indicating maximum hardware supported client number of soft ap -->
+    <integer name="config_wifiHardwareSoftapMaxClientCount">32</integer>
+
+    <!-- boolean indicating whether or not to auto-upgrade band setting configuration to dual bands during cloud configuration restore when device supported -->
+    <bool name="config_wifiSoftapAutoUpgradeToBridgedConfigWhenSupported">false</bool>
+
+    <!-- List of allowed channels in 2GHz band for softap. If the device doesn't want to restrict
+         channels this should be empty. Values is a comma separated channel string and/or channel
+         range string like '1-6,11'. -->
+    <string name="config_wifiSoftap2gChannelList" translatable="false"/>
+
+    <!-- Boolean indicating performing a partial initial scan is enabled -->
+    <bool name="config_wifiEnablePartialInitialScan">true</bool>
+
+    <!-- Boolean indicating that only configurations that have the same pre-shared key will be linked -->
+    <bool name="config_wifi_only_link_same_credential_configurations">false</bool>
+
+    <!-- Wifi driver supports Automatic channel selection (ACS) for softap -->
+    <bool name="config_wifi_softap_acs_supported">true</bool>
+
     <!-- Wifi driver supports WPA3 Simultaneous Authentication of Equals (WPA3-SAE) for softap -->
-     <bool translatable="false" name="config_wifi_softap_sae_supported">true</bool>
+    <bool name="config_wifi_softap_sae_supported">true</bool>
 
-    <!-- Enable ACS (auto channel selection) for Wifi hotspot (SAP) -->
-    <bool translatable="false" name="config_wifi_softap_acs_supported">true</bool>
+    <!-- Wifi driver supports IEEE80211AC for softap -->
+    <bool name="config_wifi_softap_ieee80211ac_supported">true</bool>
 
-    <!-- Enable 802.11ac for Wifi hotspot (SAP) -->
-    <bool translatable="false" name="config_wifi_softap_ieee80211ac_supported">true</bool>
+    <!-- Wifi driver supports IEEE80211AX for softap -->
+    <bool name="config_wifiSoftapIeee80211axSupported">true</bool>
 
-    <!-- Boolean indicating that enable roaming between linked networks -->
-    <bool name="config_wifiEnableLinkedNetworkRoaming">false</bool>
+    <!-- Wifi driver supports IEEE80211AX single user beamformer for softap -->
+    <bool name="config_wifiSoftapHeSuBeamformerSupported">true</bool>
 
-    <!-- Enable concurrent internet connectivity + internet connectivity
-         Note: this is conditional on the device supporting dual concurrent STAs. -->
-    <bool name="config_wifiMultiStaMultiInternetConcurrencyEnabled">true</bool>
+    <!-- Wifi driver supports IEEE80211AX single user beamformee for softap -->
+    <bool name="config_wifiSoftapHeSuBeamformeeSupported">true</bool>
 
-    <!-- Indicates that the framework should auto append lower bands to band configuration for
-         avoiding coexistence handling. For example: 5g only band will change to 2.4g|5g and
-         6g band will change to 2.4|5g|6g band -->
-    <bool name="config_wifiSoftapAutoAppendLowerBandsToBandConfigurationEnabled">false</bool>
+    <!-- Wifi driver supports 6GHz band for softap when chip support 6GHz -->
+    <bool name="config_wifiSoftap6ghzSupported">true</bool>
+
+    <!-- Indicates that connected MAC randomization is supported on this device -->
+    <bool name="config_wifi_connected_mac_randomization_supported">true</bool>
+
+    <!-- Indicates that p2p MAC randomization is supported on this device -->
+    <bool name="config_wifi_p2p_mac_randomization_supported">true</bool>
+
+    <!-- Indicates that dynamic country code update in AP mode is supported on this device -->
+    <bool name="config_wifiSoftApDynamicCountryCodeUpdateSupported">true</bool>
+
+    <!-- Indicates that dynamic country code update in STA mode is supported on this device -->
+    <bool name="config_wifiStaDynamicCountryCodeUpdateSupported">true</bool>
 
     <!-- Configure wifi tcp buffersizes in the form:
          rmem_min,rmem_def,rmem_max,wmem_min,wmem_def,wmem_max -->
-    <string name="config_wifi_tcp_buffers">524288,1048576,16777216,262144,524288,16777216</string>
+    <string name="config_wifi_tcp_buffers" translatable="false">524288,1048576,16777216,262144,524288,16777216</string>
+
+    <!-- Array describing scanning schedule in seconds when device is disconnected and screen is on -->
+    <integer-array name="config_wifiDisconnectedScanIntervalScheduleSec">
+        <item>20</item>
+    </integer-array>
+
+    <!-- List of constants to indicate how many failures are needed to temporarily disable a network
+    from auto-connect -->
+    <integer name="config_wifiDisableReasonAssociationRejectionThreshold">5</integer>
+    <integer name="config_wifiDisableReasonAuthenticationFailureThreshold">5</integer>
+    <integer name="config_wifiDisableReasonByWrongPasswordThreshold">2</integer>
+
+    <!-- Controls whether a wifi connection with RSSI lower than the sufficient RSSI will be
+    temporarily disabled when it is unwanted by core networking -->
+    <bool name="config_wifiDisableUnwantedNetworkOnLowRssi">true</bool>
+
+    <!-- Enable WPA2 to WPA3 auto-upgrade offload to capable Driver/Firmware -->
+    <bool name="config_wifiSaeUpgradeOffloadEnabled">true</bool>
+
+    <!-- Wifi driver Automatic channel selection (ACS) for softap to include DFS channels -->
+    <bool name="config_wifiSoftapAcsIncludeDfs">true</bool>
+
+    <!-- Interval Multiplier for PNO scan. After not finding any networks for
+         config_wifiPnoScanIterations, PNO will multiply the scan interval by the value
+         configured.-->
+    <integer name="config_wifiPnoScanIntervalMultiplier">6</integer>
+
+    <!-- integer indicating additional disconnect delay (in ms) after IMS onLost() indication is received -->
+    <integer name="config_wifiDelayDisconnectOnImsLostMs">1000</integer>
+
+    <!-- Enable Aware NDP interface selection on interface that already has network set up.
+     Note: the default AOSP Android does not support multiple networks on the same Aware NDI.
+     Enabling this configuration will restore legacy behavior but may result in incorrect behavior.
+     -->
+    <bool name="config_wifiAllowMultipleNetworksOnSameAwareNdi">true</bool>
+
+    <!-- Whether we should apply APF filters on non primary STA connections when STA + STA is active.
+         Defaults to false since most wifi chips cannot support concurrent APF filter set needed for STA + STA-->
+    <bool name="config_wifiEnableApfOnNonPrimarySta">true</bool>
+
+    <!-- Whether to use the explicit vendor HAL API: IWifiStaIface.setRoamingState for disabling fw roaming (only needed if
+         setting the bssid on the connection alone does not disable fw roaming on this chip) -->
+    <bool name="config_wifiUseHalApiToDisableFwRoaming">true</bool>
+
+    <!-- Indicates that SAE Hash-to-Element is supported on this device -->
+    <bool name="config_wifiSaeH2eSupported">true</bool>
+
+    <!-- Integer threshold for max number of WifiConfigurations that can be saved on the device.
+         A value of -1 indicates no limit. If a max number is specified, then under-used configs will
+         be deleted to make room for new configs.-->
+    <integer name="config_wifiMaxNumWifiConfigurations">1000</integer>
+
+    <!-- Whether to allow Settings or SUW to create insecure Enterprise networks where server
+         certificate is not validated, by not specifying a Root CA certificate and/or server domain
+         name. It is STRONGLY RECOMMENDED to be set to false -->
+    <bool name="config_wifiAllowInsecureEnterpriseConfigurationsForSettingsAndSUW">true</bool>
+
+    <!-- Indicates whether or not the WLAN driver supports the NL80211_CMD_REG_CHANGE or
+         NL80211_CMD_WIPHY_REG_CHANGE events which indicate the current country code which is
+         being used by the WLAN driver. If the driver doesn't support these events
+         (configuration is `false`) then the driver must handle the setCountryCode request from
+         HAL as a blocking call. In such a case the country code will be applied
+         immediately after the country code is sent to the driver (if the method returns a
+         success). -->
+    <bool name="config_wifiDriverSupportedNl80211RegChangedEvent">true</bool>
+
+    <!-- Wifi driver supports Opportunistic Wireless Encryption (OWE) Transition
+         aka Enhanced Open for Soft-AP -->
+    <bool name="config_wifiSoftapOweTransitionSupported">true</bool>
+
+    <!-- Wifi driver supports Opportunistic Wireless Encryption (OWE)
+         aka Enhanced Open for Soft-AP -->
+    <bool name="config_wifiSoftapOweSupported">true</bool>
+
+    <!-- Indicates whether or not the Soft AP needs to be restarted when country code changed -->
+    <bool name="config_wifiForcedSoftApRestartWhenCountryCodeChanged">false</bool>
+
+    <!-- Indicates the time in milliseconds to wait after creating a P2P interface before treating
+         it as low priority when disconnected, allowing it to be deleted to create other
+         interfaces. A negative value disables this behavior. -->
+    <integer name="config_disconnectedP2pIfaceLowPriorityTimeoutMs">0</integer>
+
+    <!-- Indicates whether the network-centric QoS policy feature is enabled. -->
+    <bool name="config_wifiNetworkCentricQosPolicyFeatureEnabled">true</bool>
+
+    <!-- Lists each alternate character set per locale language for SSID translation to UTF-8. This
+         will translate all SSIDs encoded with the specified character set from the native layer
+         into UTF-8 SSIDs. The translated SSIDs are then converted back to the original character
+         set when passed back to the native layer. This effectively switches all non-UTF-8 APs into
+         UTF-8 APs from the perspective of the framework and apps, and is intended to provide
+         backwards compatibility with apps that only work with UTF-8 SSIDs. Values must be in the
+         form of the locale language and canonical java.nio Charset name, separated by a comma. If
+         the locale language is "all", then the character set will apply to all locale languages
+         that do not specify their own character set. -->
+    <string-array name="config_wifiCharsetsForSsidTranslation" translatable="false">
+        <item>all,GBK</item>
+    </string-array>
 </resources>
