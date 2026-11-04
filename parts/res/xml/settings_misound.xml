@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/misound_title">
+
+    <SwitchPreferenceCompat
+        android:key="misound_enabled"
+        android:title="@string/misound_enabled_title"
+        android:summary="@string/misound_enabled_summary"
+        android:defaultValue="true" />
+
+    <ListPreference
+        android:key="misound_mode"
+        android:title="@string/misound_mode_title"
+        android:summary="@string/misound_mode_summary"
+        android:entries="@array/misound_mode_entries"
+        android:entryValues="@array/misound_mode_values"
+        android:defaultValue="1" />
+
+    <SwitchPreferenceCompat
+        android:key="misound_3d_surround"
+        android:title="@string/misound_3d_surround_title"
+        android:summary="@string/misound_3d_surround_summary"
+        android:defaultValue="false" />
+
+    <PreferenceCategory android:title="@string/eq_category_title">
+
+        <Preference
+            android:key="misound_eq_output"
+            android:title="@string/eq_output_title"
+            android:selectable="false" />
+
+        <Preference
+            android:key="misound_eq_forget_output"
+            android:title="@string/eq_output_clear_title"
+            android:summary="@string/eq_output_clear_summary" />
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_enabled"
+            android:title="@string/eq_enabled_title"
+            android:summary="@string/eq_enabled_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_apply_ear"
+            android:title="@string/eq_apply_ear_title"
+            android:summary="@string/eq_apply_ear_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_apply_bottom"
+            android:title="@string/eq_apply_bottom_title"
+            android:summary="@string/eq_apply_bottom_summary"
+            android:defaultValue="true" />
+
+        <Preference
+            android:key="misound_eq_edit_earpiece"
+            android:title="@string/eq_edit_earpiece" />
+
+        <Preference
+            android:key="misound_eq_edit_bottom"
+            android:title="@string/eq_edit_bottom" />
+
+        <Preference
+            android:key="misound_bass_edit_earpiece"
+            android:title="@string/bass_edit_earpiece" />
+
+        <Preference
+            android:key="misound_bass_edit_bottom"
+            android:title="@string/bass_edit_bottom" />
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_auto_rotate"
+            android:title="@string/eq_auto_rotate_title"
+            android:summary="@string/eq_auto_rotate_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="misound_eq_auto_suspend"
+            android:title="@string/eq_auto_suspend_title"
+            android:summary="@string/eq_auto_suspend_summary"
+            android:defaultValue="true" />
+
+        <Preference
+            android:key="misound_eq_reset_earpiece"
+            android:title="@string/eq_reset_earpiece_title"
+            android:summary="@string/eq_reset_summary" />
+
+        <Preference
+            android:key="misound_eq_reset_bottom"
+            android:title="@string/eq_reset_bottom_title"
+            android:summary="@string/eq_reset_summary" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

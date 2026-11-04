@@ -11,4 +11,70 @@
     <string name="touch_title">Touch Sampling Rate</string>
     <string name="touch_high_sampling_rate_title">High Touch Sampling Rate</string>
     <string name="touch_high_sampling_rate_footer">Increase touchscreen polling rate</string>
+
+    <!-- MiSound settings (sub-page) -->
+    <string name="misound_title">MiSound</string>
+    <string name="misound_enabled_title">Enable MiSound</string>
+    <string name="misound_enabled_summary">Route bass to the back speaker for 2.1 surround output</string>
+    <string name="misound_mode_title">Mode</string>
+    <string name="misound_mode_summary">Choose how the bottom speaker is driven</string>
+    <string name="misound_mode_off">Off</string>
+    <string name="misound_mode_intelligent">Intelligent</string>
+    <string name="misound_mode_standard">Standard</string>
+    <string name="misound_3d_surround_title">3D Surround</string>
+    <string name="misound_3d_surround_summary">Enable 3D surround processing for stereo sources</string>
+
+    <!-- Earpiece EQ (DynamicsProcessing pre-EQ on the speaker channels) -->
+    <string name="eq_category_title">Earpiece EQ</string>
+    <string name="eq_enabled_title">Enable earpiece EQ</string>
+    <string name="eq_enabled_summary">Apply a custom per-speaker EQ to the built-in speakers</string>
+    <string name="eq_apply_ear_title">EQ on earpiece</string>
+    <string name="eq_apply_ear_summary">Apply the earpiece profile to the earpiece channel</string>
+    <string name="eq_apply_bottom_title">EQ on bottom speaker</string>
+    <string name="eq_apply_bottom_summary">Apply the bottom-speaker profile to the bottom speaker channel</string>
+    <string name="eq_auto_rotate_title">Follow screen rotation</string>
+    <string name="eq_auto_rotate_summary">Swap the two profiles with L/R when the screen is upside down</string>
+    <string name="eq_auto_suspend_title">Off while using headphones</string>
+    <string name="eq_auto_suspend_summary">Suspend the EQ while wired/USB/Bluetooth audio is connected</string>
+    <string name="eq_edit_earpiece">Edit earpiece profile</string>
+    <string name="eq_edit_bottom">Edit bottom speaker profile</string>
+    <string name="eq_preamp_title">Preamp</string>
+    <string name="eq_bands_message">%1$s dB preamp, %2$d active bands</string>
+    <string name="eq_band_freq_hz">%1$d Hz</string>
+    <string name="eq_band_freq_khz">%1$s kHz</string>
+    <string name="eq_gain_value">%1$s dB</string>
+    <string name="eq_gain_seekbar_label">%1$s: %2$s</string>
+    <string name="eq_reset_title">Reset to flat</string>
+    <string name="eq_reset_message">Reset this profile to flat (0 dB everywhere)?</string>
+    <string name="eq_reset_ok">Reset</string>
+    <string name="eq_reset_cancel">Cancel</string>
+    <string name="eq_reset_summary">Set every band of this profile back to 0 dB</string>
+    <string name="eq_reset_earpiece_title">Reset earpiece profile</string>
+    <string name="eq_reset_bottom_title">Reset bottom speaker profile</string>
+
+    <!-- Earpiece virtual bass (companion AIDL effect) -->
+    <string name="bass_edit_earpiece">Virtual bass: earpiece</string>
+    <string name="bass_edit_bottom">Virtual bass: bottom speaker</string>
+    <string name="bass_strength_title">Strength</string>
+    <string name="bass_body_title">Body</string>
+    <string name="bass_limiter_title">Ceiling limiter</string>
+    <string name="bass_ceiling_title">Ceiling</string>
+    <string name="bass_limiter_on">limiter on</string>
+    <string name="bass_limiter_off">limiter off</string>
+    <string name="bass_bands_message">%1$d%% strength, %2$d%% body, %3$s</string>
+
+    <!-- Per-output-device profiles (EarpieceEQ v0.21 route system) -->
+    <string name="eq_output_title">Current output</string>
+    <string name="eq_output_clear_title">Forget this output\'s profile</string>
+    <string name="eq_output_clear_summary">Delete the saved EQ for the connected device</string>
+    <string name="eq_output_clear_message">Delete the saved profile for this output? The next connection starts from a flat, disabled profile.</string>
+    <string name="eq_output_clear_ok">Delete</string>
+    <string name="eq_output_cleared">Profile deleted</string>
+    <string name="eq_route_builtin">Built-in speakers</string>
+    <string name="eq_route_external">External output</string>
+    <string name="eq_route_unknown">Output could not be identified</string>
+    <string name="eq_route_unknown_hint">Android did not report a single media output, so processing and editing are paused. Pick one output in the system media controls.</string>
+    <string name="eq_route_paused_hint">Processing is paused for external outputs. Switch back to the built-in speakers and turn off \"Off while using headphones\" to use per-device settings.</string>
+    <string name="eq_route_active_hint">Changes are saved for this device only. Left/right stay fixed when the screen rotates. New devices start with processing off and a flat profile.</string>
+    <string name="eq_route_weak_hint">This device has no unique address, so it is identified by type and name. Identically named devices and passive wired headphones may share one profile.</string>
 </resources>
