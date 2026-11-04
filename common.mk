@@ -226,6 +226,10 @@ PRODUCT_COPY_FILES += \
     kernel/platform/kernel-6.12/vendor/xiaomi/kernel/modules-lists/modules.systemdlkm_blocklist.msm.canoe:$(TARGET_COPY_OUT_VENDOR_DLKM)/lib/modules/system_dlkm.modules.blocklist
 endif
 
+PRODUCT_SOURCE_ROOT_DIRS += \
+    kernel/platform/kernel-6.12/vendor/xiaomi/sm8850-modules \
+    kernel/platform/kernel-6.12/vendor/xiaomi/kernel
+
 # Keymint
 PRODUCT_SOONG_NAMESPACES += \
     hardware/nxp/keymint/generic \
